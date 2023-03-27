@@ -2,6 +2,8 @@
 #include "APIG23.h"
 #include "vector.h"
 
+/* Constructores */
+
 Grafo ConstruirGrafo() {
     Grafo g = (Grafo)malloc(sizeof(GrafoSt));
     char c;
@@ -16,6 +18,7 @@ Grafo ConstruirGrafo() {
             scanf("%4s %d %d\n",word,&g->V,&g->E);
             g->init = (bool*)calloc(g->V, sizeof(bool));
             g->vertex = (vector*)calloc(g->V, sizeof(vector));
+            g->degree = 0;
             break;
         }
         else 
@@ -41,6 +44,8 @@ Grafo ConstruirGrafo() {
 
         vector_pushback(g->vertex[x], y);
         vector_pushback(g->vertex[y], x);
+        g->degree = max(g->degree,max(vector_size(g->vertex[y]),
+                                      vector_size(g->vertex[x])));
     }
 
     /*
@@ -68,3 +73,23 @@ void DestruirGrafo(Grafo G) {
     free(G);
     G = NULL;
 }
+
+/* Grafo info */
+
+u32 NumeroDeVertices(Grafo G) {
+    return G->V;
+}
+u32 NumeroDeLados(Grafo G) {
+    return G->E;
+}
+u32 Delta(Grafo G){
+    return G->degree;
+}
+
+/* Vertices info*/
+
+u32 Nombre(u32 i,Grafo G){
+    
+}
+u32 Grado(u32 i,Grafo G);
+u32 IndiceVecino(u32 j,u32 i,Grafo G);
