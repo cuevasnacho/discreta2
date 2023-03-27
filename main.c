@@ -3,6 +3,7 @@
 
 int main() {
     Grafo g = ConstruirGrafo();
+    DestruirGrafo(g);
 
     return 0;
 }

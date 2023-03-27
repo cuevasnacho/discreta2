@@ -14,7 +14,7 @@ Grafo ConstruirGrafo() {
         else if (c == 'p') {
             char word[5];
             scanf("%4s %d %d\n",word,&g->V,&g->E);
-            g->init = (bool*)calloc(sizeof(g->V), sizeof(bool));
+            g->init = (bool*)calloc(g->V, sizeof(bool));
             g->vertex = (vector*)calloc(g->V, sizeof(vector));
             break;
         }
@@ -28,15 +28,22 @@ Grafo ConstruirGrafo() {
         else
             scanf("%c %d %d",&c,&x,&y);
 
-        if(!g->init[x])
+        x--; y--; // para que los nodos arranquen en 0
+
+        if(!g->init[x]) {
             g->vertex[x] = vector_init();
-        if(!g->init[y])
+            g->init[x] = true;
+        }
+        if(!g->init[y]) {
             g->vertex[y] = vector_init();
+            g->init[y] = true;
+        }
 
         vector_pushback(g->vertex[x], y);
         vector_pushback(g->vertex[y], x);
     }
 
+    /*
     for(u32 i=0; i<g->V; ++i) {
         printf("%u ", i);
         for(u32 j=0; j<vector_size(g->vertex[i]); ++j) {
@@ -44,6 +51,20 @@ Grafo ConstruirGrafo() {
         }
         printf("\n");
     }
+    */
 
     return g;
+}
+
+void DestruirGrafo(Grafo G) {
+    for(u32 i=0; i<G->V; ++i) {
+        if(G->init[i])
+            vector_destroy(G->vertex[i]);
+    }
+    free(G->vertex);
+    G->vertex = NULL;
+    free(G->init);
+    G->init = NULL;
+    free(G);
+    G = NULL;
 }
