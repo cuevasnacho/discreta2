@@ -1,9 +1,12 @@
 #include <stdlib.h>
 #include "APIG23.h"
 #include "vector.h"
-
+#include <math.h>
 /* Constructores */
 
+u32 max(u32 a, u32 b) {
+    return (a > b) ? a : b;   
+}
 Grafo ConstruirGrafo() {
     Grafo g = (Grafo)malloc(sizeof(GrafoSt));
     char c;
@@ -44,6 +47,7 @@ Grafo ConstruirGrafo() {
 
         vector_pushback(g->vertex[x], y);
         vector_pushback(g->vertex[y], x);
+
         g->degree = max(g->degree,max(vector_size(g->vertex[y]),
                                       vector_size(g->vertex[x])));
     }
@@ -89,7 +93,14 @@ u32 Delta(Grafo G){
 /* Vertices info*/
 
 u32 Nombre(u32 i,Grafo G){
-    
+    //completar
 }
-u32 Grado(u32 i,Grafo G);
-u32 IndiceVecino(u32 j,u32 i,Grafo G);
+u32 Grado(u32 i,Grafo G){
+    return vector_size(G->vertex[i]);
+}
+u32 IndiceVecino(u32 j,u32 i,Grafo G){
+    if (i < MAX_RANGE && j < vector_size(G->vertex[i]))
+        return vector_i(G->vertex[i],j);
+    else
+        return MAX_RANGE;
+}

@@ -4,7 +4,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
+#define MAX_RANGE UINT_MAX  
 
 //el .h de abajo debe tener definida GrafoSt y u32.
 #include "EstructuraGrafo23.h"
