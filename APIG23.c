@@ -2,12 +2,26 @@
 #include "APIG23.h"
 #include "vector.h"
 #include <math.h>
+
+
+inline static u32 hash_func(u32 a, u32 size){
+    return a%size;
+}
+
+static u32 get_index(u32 a){
+
+}
 /* Constructores */
 
 u32 max(u32 a, u32 b) {
     return (a > b) ? a : b;   
 }
 Grafo ConstruirGrafo() {
+
+    vector con1 = vector_init();
+    vector con2 = vector_init();
+    vector v = vector_init();
+
     Grafo g = (Grafo)malloc(sizeof(GrafoSt));
     char c;
 
@@ -27,40 +41,58 @@ Grafo ConstruirGrafo() {
         else 
             return NULL;
     }
-    for(u32 i=0; i<g->E; i++) {
-        u32 x,y;
+    //abrir el archivo leerlo hacer binary y encontrar el primo siguiente a g-V
+    u32 ht_size,i,hash,x,y;
+    u32* hash_table = (u32*)calloc(ht_size,sizeof(u32));
+
+    for(i=0; i<g->E; i++) {
+
         if(i!=g->E-1)
             scanf("%c %d %d\n",&c,&x,&y);
         else
             scanf("%c %d %d",&c,&x,&y);
 
-        x--; y--; // para que los nodos arranquen en 0
+        vector_pushback(con1,x);
+        vector_pushback(con2,y);
+        
+        hash = hash_func(x,ht_size);
+        
+        if (!hash_table[hash])
+            hash_table[hash] = x;
+        
+        else if (hash_table[hash] == x)
+            continue;
 
-        if(!g->init[x]) {
-            g->vertex[x] = vector_init();
-            g->init[x] = true;
-        }
-        if(!g->init[y]) {
-            g->vertex[y] = vector_init();
-            g->init[y] = true;
-        }
+        else
+            vector_pushback(v,x);
+        
+        hash = hash_func(y,ht_size);
+        if (!hash_table[hash])
+            hash_table[hash] = y;
 
-        vector_pushback(g->vertex[x], y);
-        vector_pushback(g->vertex[y], x);
+        else if (hash_table[hash] == y)
+            continue;
 
-        g->degree = max(g->degree,max(vector_size(g->vertex[y]),
-                                      vector_size(g->vertex[x])));
+        else
+            vector_pushback(v,y);
     }
 
-    /*
-    for(u32 i=0; i<g->V; ++i) {
-        printf("%u ", i);
-        for(u32 j=0; j<vector_size(g->vertex[i]); ++j) {
-            printf("%u ",vector_i(g->vertex[i],j));
-        }
-        printf("\n");
+    for (i = 0; i < vector_size(v); i++){
+        u32 vi = vector_i(v,i);
+        hash = hash_func(vi+1,ht_size);
+        while(!hash_table[hash] && hash_table[hash] != hash)
+            i = hash_func(i+1,ht_size);
+
+        if (!hash_table[hash])
+            hash_table[hash] = vi;
+
     }
-    */
+    //rearmar conexiones
+    for (i = 0; i < g->E; i++){
+        x = hash_func(vector_i(con1,i),ht_size);
+        y = hash_func(vector_i(con2,i),ht_size);
+    }
+
 
     return g;
 }
