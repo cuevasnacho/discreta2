@@ -44,6 +44,7 @@ Grafo ConstruirGrafo() {
     //abrir el archivo leerlo hacer binary y encontrar el primo siguiente a g-V
     u32 ht_size,i,hash,x,y;
     u32* hash_table = (u32*)calloc(ht_size,sizeof(u32));
+    
 
     for(i=0; i<g->E; i++) {
 
@@ -87,12 +88,41 @@ Grafo ConstruirGrafo() {
             hash_table[hash] = vi;
 
     }
+    u32 fixing = 0;
+    u32 j;
+    i = 0;
+    u32* fix_index = (u32*)calloc(ht_size,sizeof(u32));
+
+    while(i < vector_size(v)){
+        if (!hash_table[i]){
+            j = i;
+            while(!hash_table[j]){
+                j = (j+1) % ht_size;
+            }
+            fix_index[fixing] = j;
+            i = (j+1) % ht_size;
+        }
+        else{
+            fix_index[fixing] = i ;
+            i++;
+        }       
+        fixing++;
+    }
+
+
+    //ahora si quiero obtener el nodo i en el orden natural tengo que hacer
+    //hash_table[fix_index[i]]
+
     //rearmar conexiones
+    
     for (i = 0; i < g->E; i++){
         x = hash_func(vector_i(con1,i),ht_size);
         y = hash_func(vector_i(con2,i),ht_size);
-    }
 
+        vector_pushback(g->vertex[x],y);
+        vector_pushback(g->vertex[y],x);
+        
+    }
 
     return g;
 }
