@@ -17,6 +17,8 @@ Grafo ConstruirGrafo() {
     u32 j,fixing,ht_size,i,hash,x,y;
     char c;
     Grafo g = (Grafo)malloc(sizeof(GrafoSt));
+    if (g == NULL)
+        printf("Eror pidiendo memoria \n");
 
     while ((c = getchar()) != EOF) {
         if (c == 'c') {
@@ -28,6 +30,8 @@ Grafo ConstruirGrafo() {
             scanf("%4s %d %d\n",word,&g->V,&g->E);
             g->init = (bool*)calloc(g->V, sizeof(bool));
             g->vertex = (vector*)calloc(g->V, sizeof(vector));
+            if (g->init == NULL || g->vertex == NULL)
+                printf("Error pidiendo memoria \n");
             g->degree = 0;
             break;
         }
@@ -41,6 +45,8 @@ Grafo ConstruirGrafo() {
     vector v = vector_init(g->V);
     g->hash_table = (u32*)calloc(ht_size,sizeof(u32));
     g->fix_index = (u32*)calloc(ht_size,sizeof(u32));
+    if (g->hash_table == NULL || g->fix_index == NULL)
+        printf("Error pidiendo memoria \n");
 
     for(i=0; i<g->E; i++) {
 
