@@ -14,13 +14,9 @@ u32 max(u32 a, u32 b) {
     return (a > b) ? a : b;   
 }
 Grafo ConstruirGrafo() {
-
-    vector con1 = vector_init();
-    vector con2 = vector_init();
-    vector v = vector_init();
-
-    Grafo g = (Grafo)malloc(sizeof(GrafoSt));
+    u32 j,fixing,ht_size,i,hash,x,y;
     char c;
+    Grafo g = (Grafo)malloc(sizeof(GrafoSt));
 
     while ((c = getchar()) != EOF) {
         if (c == 'c') {
@@ -38,11 +34,13 @@ Grafo ConstruirGrafo() {
         else 
             return NULL;
     }
-    //abrir el archivo leerlo hacer binary y encontrar el primo siguiente a g-V
-    u32 ht_size,i,hash,x,y;
-    ht_size = g->E;
-    g->hash_table = (u32*)calloc(ht_size,sizeof(u32));
     
+    ht_size = g->E;
+    vector con1 = vector_init(g->E);
+    vector con2 = vector_init(g->E);
+    vector v = vector_init(g->V);
+    g->hash_table = (u32*)calloc(ht_size,sizeof(u32));
+    g->fix_index = (u32*)calloc(ht_size,sizeof(u32));
 
     for(i=0; i<g->E; i++) {
 
@@ -87,12 +85,10 @@ Grafo ConstruirGrafo() {
         if (!g->hash_table[hash])
             g->hash_table[hash] = vi;
     }
-    u32 j;
-    i = 0;
-    g->fix_index = (u32*)calloc(ht_size,sizeof(u32));
-    u32 fixing = 0;
-
+    
     /* Acomoda los indices */
+    i = 0;
+    fixing = 0;
     while(i < ht_size && fixing < ht_size){
         if (!g->hash_table[i]){
             j = i;
@@ -130,9 +126,9 @@ Grafo ConstruirGrafo() {
             y = hash_func(y+1,ht_size);
         
         if (!g->vertex[x])
-            g->vertex[x] = vector_init();
+            g->vertex[x] = vector_init(g->E/2);
         if (!g->vertex[y])
-            g->vertex[y] = vector_init();
+            g->vertex[y] = vector_init(g->E/2);
                   
 
         vector_pushback(g->vertex[x],y);

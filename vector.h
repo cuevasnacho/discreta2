@@ -4,7 +4,7 @@
 typedef unsigned int u32;
 typedef struct vector_head *vector;
 
-vector vector_init(void);
+vector vector_init(u32 size);
 
 void vector_pushback(vector v, u32 value);
 

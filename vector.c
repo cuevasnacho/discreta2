@@ -7,10 +7,10 @@ typedef struct vector_head {
     u32 capacity;
 } vector_head;
 
-vector vector_init(void) {
+vector vector_init(u32 size) {
     vector v = malloc(sizeof(vector_head));
     v->size = 0;
-    v->capacity = 1;
+    v->capacity = size;
     v->values = malloc(sizeof(u32)*v->capacity);
     return v;
 }
