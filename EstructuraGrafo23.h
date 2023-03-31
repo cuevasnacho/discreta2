@@ -12,6 +12,8 @@ typedef struct GrafoSt {
     u32 V;
     u32 E;
     u32 degree;
+    u32* hash_table;
+    u32* fix_index;
 } GrafoSt;
 
 #endif

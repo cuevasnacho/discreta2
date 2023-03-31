@@ -8,9 +8,6 @@ inline static u32 hash_func(u32 a, u32 size){
     return a%size;
 }
 
-static u32 get_index(u32 a){
-
-}
 /* Constructores */
 
 u32 max(u32 a, u32 b) {
@@ -43,8 +40,8 @@ Grafo ConstruirGrafo() {
     }
     //abrir el archivo leerlo hacer binary y encontrar el primo siguiente a g-V
     u32 ht_size,i,hash,x,y;
-    ht_size = 5;
-    u32* hash_table = (u32*)calloc(ht_size,sizeof(u32));
+    ht_size = g->E;
+    g->hash_table = (u32*)calloc(ht_size,sizeof(u32));
     
 
     for(i=0; i<g->E; i++) {
@@ -58,17 +55,17 @@ Grafo ConstruirGrafo() {
         vector_pushback(con2,y);
         
         hash = hash_func(x,ht_size);
-        if (!hash_table[hash])
-            hash_table[hash] = x;
-        else if (hash_table[hash] == x)
+        if (!g->hash_table[hash])
+            g->hash_table[hash] = x;
+        else if (g->hash_table[hash] == x)
             continue;
         else
             vector_pushback(v,x);
         
         hash = hash_func(y,ht_size);
-        if (!hash_table[hash])
-            hash_table[hash] = y;
-        else if (hash_table[hash] == y)
+        if (!g->hash_table[hash])
+            g->hash_table[hash] = y;
+        else if (g->hash_table[hash] == y)
             continue;
         else
             vector_pushback(v,y);
@@ -76,7 +73,7 @@ Grafo ConstruirGrafo() {
     
     /* Muestra conecciones */ 
     for (i = 0; i < g->E; i++){
-        printf("%d ", hash_table[i]);
+        printf("%d ", g->hash_table[i]);
     }
     printf("\n");
 
@@ -84,29 +81,29 @@ Grafo ConstruirGrafo() {
     for (i = 0; i < vector_size(v); i++){
         u32 vi = vector_i(v,i);
         hash = hash_func(vi+1,ht_size);
-        while(hash_table[hash] && hash_table[hash] != vi)
+        while(g->hash_table[hash] && g->hash_table[hash] != vi)
             hash = hash_func(hash+1,ht_size);
 
-        if (!hash_table[hash])
-            hash_table[hash] = vi;
+        if (!g->hash_table[hash])
+            g->hash_table[hash] = vi;
     }
     u32 j;
     i = 0;
-    u32* fix_index = (u32*)calloc(ht_size,sizeof(u32));
+    g->fix_index = (u32*)calloc(ht_size,sizeof(u32));
     u32 fixing = 0;
 
     /* Acomoda los indices */
     while(i < ht_size && fixing < ht_size){
-        if (!hash_table[i]){
+        if (!g->hash_table[i]){
             j = i;
-            while(!hash_table[j]){
+            while(!g->hash_table[j]){
                 j = (j+1) % ht_size;
             }
-            fix_index[fixing] = j;
+            g->fix_index[fixing] = j;
             i = (j+1) % ht_size;
         }
         else{
-            fix_index[fixing] = i;
+            g->fix_index[fixing] = i;
             i++;
         }       
         fixing++;
@@ -116,7 +113,7 @@ Grafo ConstruirGrafo() {
 
     /* Muestra conecciones */ 
     for (i = 0; i < g->E; i++){
-        printf("%d ", fix_index[i]);
+        printf("%d ", g->fix_index[i]);
     }
     printf("\n");
 
@@ -126,10 +123,10 @@ Grafo ConstruirGrafo() {
         y = hash_func(vector_i(con2,i),ht_size);
         
         //lo tiene que buscar                 
-        while(hash_table[x] != vector_i(con1,i))
+        while(g->hash_table[x] != vector_i(con1,i))
             x = hash_func(x+1,ht_size);         
         
-        while(hash_table[y] != vector_i(con2,i))
+        while(g->hash_table[y] != vector_i(con2,i))
             y = hash_func(y+1,ht_size);
         
         if (!g->vertex[x])
@@ -152,7 +149,9 @@ Grafo ConstruirGrafo() {
         }
     }
     //falta hacer los frees
-
+    vector_destroy(con1);
+    vector_destroy(con2);
+    vector_destroy(v);
     return g;
 }
 
@@ -161,6 +160,10 @@ void DestruirGrafo(Grafo G) {
         if(G->init[i])
             vector_destroy(G->vertex[i]);
     }
+    free(G->hash_table);
+    G->hash_table = NULL;
+    free(G->fix_index);
+    G->fix_index = NULL;
     free(G->vertex);
     G->vertex = NULL;
     free(G->init);
