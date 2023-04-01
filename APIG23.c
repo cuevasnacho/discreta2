@@ -19,7 +19,7 @@ Grafo ConstruirGrafo() {
     Grafo g = (Grafo)malloc(sizeof(GrafoSt));
     if (g == NULL)
         printf("Eror pidiendo memoria \n");
-
+    g->init_name = false;
     while ((c = getchar()) != EOF) {
         if (c == 'c') {
             while (c != '\n')
@@ -28,8 +28,8 @@ Grafo ConstruirGrafo() {
         else if (c == 'p') {
             char word[5];
             scanf("%4s %d %d\n",word,&g->V,&g->E);
-            g->init = (bool*)calloc(g->V, sizeof(bool));
-            g->vertex = (vector*)calloc(g->V, sizeof(vector));
+            g->init = (bool*)calloc(g->V+1, sizeof(bool));
+            g->vertex = (vector*)calloc(g->V+1, sizeof(vector));
             if (g->init == NULL || g->vertex == NULL)
                 printf("Error pidiendo memoria \n");
             g->degree = 0;
@@ -39,9 +39,9 @@ Grafo ConstruirGrafo() {
             return NULL;
     }
     
-    ht_size = g->E;
-    vector con1 = vector_init(g->E);
-    vector con2 = vector_init(g->E);
+    ht_size = g->V+1;
+    vector con1 = vector_init(g->V+1);
+    vector con2 = vector_init(g->V+1);
     vector v = vector_init(g->V);
     g->hash_table = (u32*)calloc(ht_size,sizeof(u32));
     g->fix_index = (u32*)calloc(ht_size,sizeof(u32));
@@ -74,13 +74,7 @@ Grafo ConstruirGrafo() {
         else
             vector_pushback(v,y);
     }
-    
-    /* Muestra conecciones */ 
-    for (i = 0; i < g->E; i++){
-        printf("%d ", g->hash_table[i]);
-    }
-    printf("\n");
-
+    printf("Cantidad de coliciones: %d\n",vector_size(v));
     /* Encontrar un lugar para las coliciones */
     for (i = 0; i < vector_size(v); i++){
         u32 vi = vector_i(v,i);
@@ -91,58 +85,43 @@ Grafo ConstruirGrafo() {
         if (!g->hash_table[hash])
             g->hash_table[hash] = vi;
     }
-    
-    /* Acomoda los indices */
-    i = 0;
-    fixing = 0;
-    while(i < ht_size && fixing < ht_size){
-        if (!g->hash_table[i]){
-            j = i;
-            while(!g->hash_table[j]){
-                j = (j+1) % ht_size;
-            }
-            g->fix_index[fixing] = j;
-            i = (j+1) % ht_size;
-        }
-        else{
-            g->fix_index[fixing] = i;
-            i++;
-        }       
-        fixing++;
-    }
-    //ahora si quiero obtener el nodo i en el orden natural tengo que hacer
-    //hash_table[fix_index[i]]
+    printf("Acomodo indice \n");
 
-    /* Muestra conecciones */ 
-    for (i = 0; i < g->E; i++){
-        printf("%d ", g->fix_index[i]);
-    }
-    printf("\n");
-
+    vector_destroy(v);
+    printf("Reaarmo connecciones \n");
     /* armar conexiones con el nuevo mapeo */
-    for (i = 0; i < g->E; i++){
+    double coneccion_qty = ceil((0.1*g->E)/100);
+    for (i = 0; i < (g->E); i++){
         x = hash_func(vector_i(con1,i),ht_size);
         y = hash_func(vector_i(con2,i),ht_size);
-        
+     
         //lo tiene que buscar                 
-        while(g->hash_table[x] != vector_i(con1,i))
-            x = hash_func(x+1,ht_size);         
-        
-        while(g->hash_table[y] != vector_i(con2,i))
+        while(g->hash_table[x] != vector_i(con1,i)){
+            x = hash_func(x+1,ht_size);
+        }
+                     
+        while(g->hash_table[y] != vector_i(con2,i)){
             y = hash_func(y+1,ht_size);
-        
-        if (!g->vertex[x])
-            g->vertex[x] = vector_init(g->E/2);
-        if (!g->vertex[y])
-            g->vertex[y] = vector_init(g->E/2);
-                  
-
+        }
+    
+        if (!g->init[x]){
+            g->vertex[x] = vector_init((int)coneccion_qty);
+            g->init[x] = true;
+        }
+            
+        if (!g->init[y]){
+            g->vertex[y] = vector_init((int)coneccion_qty);
+            g->init[y] = true;
+        }
         vector_pushback(g->vertex[x],y);
         vector_pushback(g->vertex[y],x);
+        g->degree = max(max(g->degree,vector_size(g->vertex[x])),vector_size(g->vertex[y]));
     }
-        /* Muestra conecciones */ 
+
+    /* Muestra conecciones */ 
+    /*
     for (i = 0; i <= g->V; i++){
-        if (g->vertex[i]){
+        if (g->init[i]){
             printf("%d :",i);
             for (j = 0; j < vector_size(g->vertex[i]); j++){        
                 printf("%d ",vector_i(g->vertex[i],j));
@@ -150,10 +129,11 @@ Grafo ConstruirGrafo() {
             printf("\n");
         }
     }
+    */
+    printf("Destruyo \n");
     //falta hacer los frees
     vector_destroy(con1);
     vector_destroy(con2);
-    vector_destroy(v);
     return g;
 }
 
@@ -189,7 +169,32 @@ u32 Delta(Grafo G){
 /* Vertices info*/
 
 u32 Nombre(u32 i,Grafo G){
-    //completar
+    /* Acomoda los indices */
+    if (!G->init_name){
+        u32 fixing,ht_size,j,k;
+        ht_size = G->V+1;
+        k = 0;
+        fixing = 0;
+        while(k < ht_size && fixing < ht_size){
+            if (!G->hash_table[k]){
+                j = k;
+                while(!G->hash_table[j]){
+                    j = (j+1) % ht_size;
+                }
+                G->fix_index[fixing] = j;
+                k = (j+1) % ht_size;
+            }
+            else{
+                G->fix_index[fixing] = k;
+                k = (k+1) % ht_size;
+            }       
+            fixing++;
+        }
+        G->init_name = true;
+    }    
+    //ahora si quiero obtener el nodo i en el orden natural tengo que hacer
+    //hash_table[fix_index[i]]
+    G->hash_table[G->fix_index[i]];
 }
 u32 Grado(u32 i,Grafo G){
     return vector_size(G->vertex[i]);
