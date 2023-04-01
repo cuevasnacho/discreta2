@@ -118,20 +118,7 @@ Grafo ConstruirGrafo() {
         g->degree = max(max(g->degree,vector_size(g->vertex[x])),vector_size(g->vertex[y]));
     }
 
-    /* Muestra conecciones */ 
-    /*
-    for (i = 0; i <= g->V; i++){
-        if (g->init[i]){
-            printf("%d :",i);
-            for (j = 0; j < vector_size(g->vertex[i]); j++){        
-                printf("%d ",vector_i(g->vertex[i],j));
-            }
-            printf("\n");
-        }
-    }
-    */
     printf("Destruyo \n");
-    //falta hacer los frees
     vector_destroy(con1);
     vector_destroy(con2);
     return g;
@@ -171,30 +158,19 @@ u32 Delta(Grafo G){
 u32 Nombre(u32 i,Grafo G){
     /* Acomoda los indices */
     if (!G->init_name){
-        u32 fixing,ht_size,j,k;
-        ht_size = G->V+1;
-        k = 0;
+        u32 fixing,j,k;
         fixing = 0;
-        while(k < ht_size && fixing < ht_size){
-            if (!G->hash_table[k]){
-                j = k;
-                while(!G->hash_table[j]){
-                    j = (j+1) % ht_size;
-                }
-                G->fix_index[fixing] = j;
-                k = (j+1) % ht_size;
-            }
-            else{
-                G->fix_index[fixing] = k;
-                k = (k+1) % ht_size;
-            }       
+        for (k = 0; k < G->V+1; k++){
+            if (!G->hash_table[k])
+                continue;
+            G->fix_index[fixing] = k;
             fixing++;
         }
         G->init_name = true;
     }    
     //ahora si quiero obtener el nodo i en el orden natural tengo que hacer
     //hash_table[fix_index[i]]
-    G->hash_table[G->fix_index[i]];
+    G->hash_table[G->fix_index[hash_func(i,G->V+1)]];
 }
 u32 Grado(u32 i,Grafo G){
     return vector_size(G->vertex[i]);
