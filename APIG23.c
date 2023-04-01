@@ -28,8 +28,8 @@ Grafo ConstruirGrafo() {
         else if (c == 'p') {
             char word[5];
             scanf("%4s %d %d\n",word,&g->V,&g->E);
-            g->init = (bool*)calloc(g->V+1, sizeof(bool));
-            g->vertex = (vector*)calloc(g->V+1, sizeof(vector));
+            g->init = (bool*)calloc(g->V+2, sizeof(bool));
+            g->vertex = (vector*)calloc(g->V+2, sizeof(vector));
             if (g->init == NULL || g->vertex == NULL)
                 printf("Error pidiendo memoria \n");
             g->degree = 0;
@@ -39,10 +39,10 @@ Grafo ConstruirGrafo() {
             return NULL;
     }
     
-    ht_size = g->V+1;
-    vector con1 = vector_init(g->V+1);
-    vector con2 = vector_init(g->V+1);
-    vector v = vector_init(g->V);
+    ht_size = g->V+2;
+    vector con1 = vector_init(g->V+2);
+    vector con2 = vector_init(g->V+2);
+    vector v = vector_init(g->V+2);
     g->hash_table = (u32*)calloc(ht_size,sizeof(u32));
     g->fix_index = (u32*)calloc(ht_size,sizeof(u32));
     if (g->hash_table == NULL || g->fix_index == NULL)
@@ -50,11 +50,12 @@ Grafo ConstruirGrafo() {
 
     for(i=0; i<g->E; i++) {
 
-        if(i!=g->E-1)
-            scanf("%c %d %d\n",&c,&x,&y);
-        else
-            scanf("%c %d %d",&c,&x,&y);
+        //if(i != g->E-1)
+        scanf("%c %d %d\n",&c,&x,&y);
+        //else
+        //    scanf("%c %d %d",&c,&x,&y);
 
+        
         vector_pushback(con1,x);
         vector_pushback(con2,y);
         
@@ -68,12 +69,16 @@ Grafo ConstruirGrafo() {
         
         hash = hash_func(y,ht_size);
         if (!g->hash_table[hash])
-            g->hash_table[hash] = y;
+            g->hash_table[hash] = y;    
         else if (g->hash_table[hash] == y)
             continue;
         else
             vector_pushback(v,y);
+        
     }
+    g->hash_table[hash_func(x,ht_size)] = x;
+    g->hash_table[hash_func(y,ht_size)] = y;
+    
     printf("Cantidad de coliciones: %d\n",vector_size(v));
     /* Encontrar un lugar para las coliciones */
     for (i = 0; i < vector_size(v); i++){
@@ -85,25 +90,21 @@ Grafo ConstruirGrafo() {
         if (!g->hash_table[hash])
             g->hash_table[hash] = vi;
     }
-    printf("Acomodo indice \n");
-
+    
     vector_destroy(v);
     printf("Reaarmo connecciones \n");
     /* armar conexiones con el nuevo mapeo */
-    double coneccion_qty = ceil((0.1*g->E)/100);
-    for (i = 0; i < (g->E); i++){
+    double coneccion_qty = ceil((0.0001*g->E)/100);
+    for (i = 0; i < g->E; i++){
         x = hash_func(vector_i(con1,i),ht_size);
         y = hash_func(vector_i(con2,i),ht_size);
-     
-        //lo tiene que buscar                 
-        while(g->hash_table[x] != vector_i(con1,i)){
-            x = hash_func(x+1,ht_size);
-        }
                      
-        while(g->hash_table[y] != vector_i(con2,i)){
+        while(g->hash_table[x] != vector_i(con1,i))
+            x = hash_func(x+1,ht_size);
+        
+        while(g->hash_table[y] != vector_i(con2,i))
             y = hash_func(y+1,ht_size);
-        }
-    
+            
         if (!g->init[x]){
             g->vertex[x] = vector_init((int)coneccion_qty);
             g->init[x] = true;
@@ -125,7 +126,7 @@ Grafo ConstruirGrafo() {
 }
 
 void DestruirGrafo(Grafo G) {
-    for(u32 i=0; i<G->V; ++i) {
+    for(u32 i=0; i<G->V+1; ++i) {
         if(G->init[i])
             vector_destroy(G->vertex[i]);
     }
@@ -158,6 +159,7 @@ u32 Delta(Grafo G){
 u32 Nombre(u32 i,Grafo G){
     /* Acomoda los indices */
     if (!G->init_name){
+        printf("Acomodo indice \n");
         u32 fixing,j,k;
         fixing = 0;
         for (k = 0; k < G->V+1; k++){

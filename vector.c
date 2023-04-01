@@ -22,7 +22,8 @@ vector vector_init(u32 size) {
 
 void vector_pushback(vector v, u32 value) {
     if(v->size >= v->capacity) {
-        v->capacity *= 2;
+        //v->capacity *= 2;
+        v->capacity = v->capacity + (v->capacity/2);
         v->values = realloc(v->values,sizeof(u32)*(v->capacity));
         if (v->values == NULL)
             printf("Error pidiendo memoria \n");
