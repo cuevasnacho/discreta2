@@ -58,7 +58,7 @@ Grafo ConstruirGrafo() {
         
         hash = hash_func(y,v_size);
         if (!g->name[hash])
-            g->name[hash] = x;
+            g->name[hash] = y;
         else if (g->name[hash] != y)
             vector_pushback(v,y);
     }
