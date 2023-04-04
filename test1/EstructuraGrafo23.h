@@ -8,11 +8,11 @@ typedef unsigned int u32;
 
 typedef struct GrafoSt {
     vector* vertex;
-    u32* name;
+    u32* __restrict__ name;
     u32 V;
     u32 E;
     u32 degree;
-    bool* init;
+    bool* __restrict__ init;
 } GrafoSt;
 
 #endif

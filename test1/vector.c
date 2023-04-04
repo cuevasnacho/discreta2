@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "vector.h"
+#include <math.h>
 
 typedef struct vector_head {
     u32* values;
@@ -23,10 +24,10 @@ vector vector_init(u32 size) {
 void vector_pushback(vector v, u32 value) {
     if(v->size >= v->capacity) {
         //v->capacity *= 2;
-        if(v->capacity > 1)
-            v->capacity = v->capacity + (v->capacity/2);
+        if(v->capacity > 3000)
+            v->capacity = v->capacity + (v->capacity>>2);
         else
-            v->capacity *= 4;
+            v->capacity *= 3;
         //printf("realloc\n");
         v->values = realloc(v->values,sizeof(u32)*(v->capacity));
         if (v->values == NULL)
