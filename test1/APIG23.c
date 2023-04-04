@@ -9,7 +9,6 @@ inline static u32 hash_func(u32 a, u32 size){
 }
 
 /* Constructores */
-
 static u32 max(u32 a, u32 b) {
     return (a > b) ? a : b;   
 }
@@ -18,7 +17,7 @@ Grafo ConstruirGrafo() {
     char c;
     Grafo g = (Grafo)malloc(sizeof(GrafoSt));
     if (g == NULL)
-        printf("Eror pidiendo memoria \n");
+        printf("Error pidiendo memoria \n");
     while ((c = getchar()) != EOF) {
         if (c == 'c') {
             while (c != '\n')
@@ -64,12 +63,11 @@ Grafo ConstruirGrafo() {
     }
     
     /* Encontrar un lugar para las coliciones */
-    printf("Cantidad de coliciones: %d\n",vector_size(v));
+    //printf("Cantidad de coliciones: %d\n",vector_size(v));
     for (i = 0; i < vector_size(v); i++){
         u32 vi = vector_i(v,i);
         hash = hash_func(vi+1,v_size);
-
-        while(g->name[hash])
+        while(g->name[hash] && g->name[hash]!=vi)
             hash = hash_func(hash+1,v_size);
         g->name[hash] = vi;
     }
@@ -77,15 +75,15 @@ Grafo ConstruirGrafo() {
     vector_destroy(v);
 
     /* armar conexiones con el nuevo mapeo */
-    //double coneccion_qty = ceil((0.0001*g->E)/100);
-    printf("Reaarmo conexiones \n");
+    double coneccion_qty = ceil((0.0001*g->E)/100);
+    //printf("Reaarmo conexiones \n");
     for (i = 0; i < g->E; i++) {
         x = hash_func(vector_i(con1,i),v_size);
         while(g->name[x] != vector_i(con1,i))
             x = hash_func(x+1,v_size);
 
         if (!g->init[x]){
-            g->vertex[x] = vector_init(1);
+            g->vertex[x] = vector_init((int)coneccion_qty);
             g->init[x] = true;
         }
         
@@ -94,7 +92,7 @@ Grafo ConstruirGrafo() {
             y = hash_func(y+1,v_size);
 
         if (!g->init[y]){
-            g->vertex[y] = vector_init(1);
+            g->vertex[y] = vector_init((int)coneccion_qty);
             g->init[y] = true;
         }
             
@@ -109,7 +107,7 @@ Grafo ConstruirGrafo() {
             g->degree = max(g->degree,vector_size(g->vertex[i]));
     }
 
-    printf("Destruyo \n");
+    //printf("Destruyo \n");
     vector_destroy(con1);
     vector_destroy(con2);
 
@@ -118,7 +116,7 @@ Grafo ConstruirGrafo() {
 
 void DestruirGrafo(Grafo G) {
     for(u32 i=0; i<G->V+1; ++i) {
-        if(!G->init[i])
+        if(G->init[i])
             vector_destroy(G->vertex[i]);
     }
     free(G->vertex);
