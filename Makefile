@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -O3 -std=c99 -g
+CFLAGS = -Wall -Wextra -O3 -std=c99 -g -lm
 SOURCES = APIG23.c vector.c main.c
 OBJECTS = $(SOURCES:.c=.o)
 TARGET = a
