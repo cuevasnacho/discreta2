@@ -115,7 +115,7 @@ Grafo ConstruirGrafo() {
 }
 
 void DestruirGrafo(Grafo G) {
-    for(u32 i=0; i<G->V+1; ++i) {
+    for(u32 i=0; i<G->V; ++i) {
         if(G->init[i])
             vector_destroy(G->vertex[i]);
     }
