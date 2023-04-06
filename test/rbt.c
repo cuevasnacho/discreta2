@@ -1,14 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+typedef unsigned int u32;
 
 typedef struct node {
-    int value;
+    u32 value;
     struct node *left;
     struct node *right;
-    int color; // 0 for black, 1 for red
+    struct node *parent;
+    u32 color; // 0 for black, 1 for red
 } node;
 
-node* create_node(int value) {
+node* create_node(u32 value) {
     node *new_node = (node*) malloc(sizeof(node));
     new_node->value = value;
     new_node->left = NULL;
@@ -44,9 +47,11 @@ void rotate_right(node **root, node *y) {
     x->parent = y->parent;
     if (y->parent == NULL) {
         *root = x;
-    } else if (y == y->parent->left) {
+    } 
+    else if (y == y->parent->left) {
         y->parent->left = x;
-    } else {
+    } 
+    else {
         y->parent->right = x;
     }
     x->right = y;
@@ -62,7 +67,8 @@ void fix_violation(node **root, node *z) {
                 y->color = 0;
                 z->parent->parent->color = 1;
                 z = z->parent->parent;
-            } else {
+            } 
+            else {
                 if (z == z->parent->right) {
                     z = z->parent;
                     rotate_left(root, z);
@@ -71,14 +77,16 @@ void fix_violation(node **root, node *z) {
                 z->parent->parent->color = 1;
                 rotate_right(root, z->parent->parent);
             }
-        } else {
+        } 
+        else {
             node *y = z->parent->parent->left;
             if (y != NULL && y->color == 1) {
                 z->parent->color = 0;
                 y->color = 0;
                 z->parent->parent->color = 1;
                 z = z->parent->parent;
-            } else {
+            } 
+            else {
                 if (z == z->parent->left) {
                     z = z->parent;
                     rotate_right(root, z);
@@ -92,7 +100,7 @@ void fix_violation(node **root, node *z) {
     (*root)->color = 0;
 }
 
-void insert(node **root, int value) {
+void insert(node **root, u32 value) {
     node *new_node = create_node(value);
     node *x = *root;
     node *y = NULL;
@@ -118,10 +126,40 @@ void insert(node **root, int value) {
     fix_violation(root, new_node);
 }
 
-void inorder_traversal(node *root) {
+bool belong(node *root, u32 value) {
+    while (root != NULL) {
+        if (value == root->value) {
+            return true;
+        } else if (value < root->value) {
+            root = root->left;
+        } else {
+            root = root->right;
+        }
+    }
+    return false;
+}
+void destroy_tree(node *root) {
     if (root != NULL) {
-        inorder_traversal(root->left);
-        printf("%d ", root->value);
-        inorder_traversal(root->right);
+        destroy_tree(root->left);
+        destroy_tree(root->right);
+        free(root);
     }
 }
+
+/*
+u32 main() {
+    node *root = NULL;
+    insert(&root, 7);
+    insert(&root, 6);
+    insert(&root, 5);
+    insert(&root, 4);
+    insert(&root, 3);
+    insert(&root, 2);
+    insert(&root, 1);
+    printf("Inorder traversal of the red-black tree: ");
+    //inorder_traversal(root);
+    printf("El elemento %d\n",belong(root,7));
+    printf("EL elemento 1222 %d\n",belong(root,1222));
+    return 0;
+}
+*/

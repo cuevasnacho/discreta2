@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "APIG23.h"
 #include "vector.h"
+#include "rbt.c"
 
 inline static u32 hash_func(u32 a, u32 size){
     return a%size;
@@ -46,6 +47,7 @@ Grafo ConstruirGrafo() {
     u32* next_free = (u32*)calloc(g->V, sizeof(u32));
     bool* init_fi = (bool*)calloc(g->V, sizeof(bool));
     /* Pedir los lados y ubicar los primeros vertices */
+    node *root = NULL;
     for(i=0; i<g->E; i++) {
         if (!scanf("%c %d %d\n",&c,&x,&y))
             printf("Error leyendo los valores");
@@ -59,7 +61,11 @@ Grafo ConstruirGrafo() {
             next_free[hash] = hash;
         }
         else if (g->name[hash] != x){
-            vector_pushback(v,x);
+            if (!belong(root,x)){
+                vector_pushback(v,x);
+                insert(root,x);
+            }
+            
             if (!init_fi[hash]){
                 find_index[hash] = vector_init(1);
                 init_fi[hash] = true;
@@ -72,26 +78,27 @@ Grafo ConstruirGrafo() {
             next_free[hash] = hash;
         }
         else if (g->name[hash] != y){
-            vector_pushback(v,y);
+            if (!belong(root,x)){
+                vector_pushback(v,y);
+                insert(root,x);
+            }
             if (!init_fi[hash]){
                 find_index[hash] = vector_init(1);
                 init_fi[hash] = true;
             }
         }
     }
-
+    
     /* Encontrar un lugar para las coliciones */
     for (u32 i = 0,h; i < vector_size(v); i++){
         u32 vi = vector_i(v,i);
         hash = hash_func(vi,v_size);
         h = next_free[hash];
-        while(g->name[h] && g->name[h]!=vi)
+        while(g->name[h])
             h = hash_func(h+1,v_size);
-        if (!g->name[h]) {
-            next_free[hash] = h;
-            g->name[h] = vi;
-            vector_pushback(find_index[hash],h);
-        }
+        next_free[hash] = h;
+        g->name[h] = vi;
+        vector_pushback(find_index[hash],h);    
     }
     vector_destroy(v);
     
@@ -158,6 +165,7 @@ Grafo ConstruirGrafo() {
         if (init_fi[i])
             vector_destroy(find_index[i]);        
     }
+    destroy_tree(root);
     free(next_free);
     free(find_index);
     free(init_fi);
