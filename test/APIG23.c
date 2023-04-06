@@ -84,19 +84,17 @@ Grafo ConstruirGrafo() {
         while(g->name[h] && g->name[h]!=vi)
             h = hash_func(h+1,v_size);
         next_free[hash] = h;
-        g->name[hash] = vi;
+        g->name[h] = vi;
         vector_pushback(find_index[hash],h);
     }
     vector_destroy(v);
-    u32 k,n,bound;
+    
     /* Armar conexiones con el nuevo mapeo */
     double coneccion_qty = ceil((0.0001*g->E)/100);
-    for (i = 0; i < g->E; i++) {
+    for (u32 i = 0,k,n,bound; i < g->E; i++) {
         x = hash_func(vector_i(con1,i),v_size);
         
         if (g->name[x] != vector_i(con1,i)){
-            //thead1
-            
             n = vector_size(find_index[x]);
             bound = (n % 2 == 0) ? n/2 : (n+1)/2;
             for (k = 0; k < bound; k++){
@@ -112,15 +110,13 @@ Grafo ConstruirGrafo() {
         }
 
         if (!g->init[x]){
-            g->vertex[x] = vector_init((int)coneccion_qty);
+            g->vertex[x] = vector_init((u32)coneccion_qty);
             g->init[x] = true;
         }
 
         y = hash_func(vector_i(con2,i),v_size);
 
         if (g->name[y] != vector_i(con2,i)){
-            //thead2
-            
             n = vector_size(find_index[y]);
             bound = (n % 2 == 0) ? n/2 : (n+1)/2;
             for (k = 0; k < bound; k++){
@@ -136,7 +132,7 @@ Grafo ConstruirGrafo() {
         }
 
         if (!g->init[y]){
-            g->vertex[y] = vector_init((int)coneccion_qty);
+            g->vertex[y] = vector_init((u32)coneccion_qty);
             g->init[y] = true;
         }
 
