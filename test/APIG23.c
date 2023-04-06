@@ -42,7 +42,8 @@ Grafo ConstruirGrafo() {
     vector con1 = vector_init(g->E);
     vector con2 = vector_init(g->E);
     vector v = vector_init(v_size);
-    vector*  find_index = (vector*)calloc(g->V, sizeof(vector));
+    vector* find_index = (vector*)calloc(g->V, sizeof(vector));
+    u32* next_free = (u32*)calloc(g->V, sizeof(u32));
     bool* init_fi = (bool*)calloc(g->V, sizeof(bool));
     /* Pedir los lados y ubicar los primeros vertices */
     for(i=0; i<g->E; i++) {
@@ -53,8 +54,10 @@ Grafo ConstruirGrafo() {
         vector_pushback(con2,y);
         
         hash = hash_func(x,v_size);
-        if (!g->name[hash])
+        if (!g->name[hash]){
             g->name[hash] = x;
+            next_free[hash] = hash;
+        }
         else if (g->name[hash] != x){
             vector_pushback(v,x);
             find_index[hash] = vector_init(1);
@@ -62,8 +65,10 @@ Grafo ConstruirGrafo() {
         }
         
         hash = hash_func(y,v_size);
-        if (!g->name[hash])
+        if (!g->name[hash]){
             g->name[hash] = y;
+            next_free[hash] = hash;
+        }
         else if (g->name[hash] != y){
             vector_pushback(v,y);
             find_index[hash] = vector_init(1);
@@ -72,13 +77,15 @@ Grafo ConstruirGrafo() {
     }
 
     /* Encontrar un lugar para las coliciones */
-    for (i = 0; i < vector_size(v); i++){
+    for (u32 i = 0,h; i < vector_size(v); i++){
         u32 vi = vector_i(v,i);
-        hash = hash_func(vi+1,v_size);
-        while(g->name[hash] && g->name[hash]!=vi)
-            hash = hash_func(hash+1,v_size);
+        hash = hash_func(vi,v_size);
+        h = next_free[hash];
+        while(g->name[h] && g->name[h]!=vi)
+            h = hash_func(h+1,v_size);
+        next_free[hash] = h;
         g->name[hash] = vi;
-        vector_pushback(find_index[vi%v_size],hash);
+        vector_pushback(find_index[hash],h);
     }
     vector_destroy(v);
     u32 k,n,bound;
@@ -89,6 +96,7 @@ Grafo ConstruirGrafo() {
         
         if (g->name[x] != vector_i(con1,i)){
             //thead1
+            
             n = vector_size(find_index[x]);
             bound = (n % 2 == 0) ? n/2 : (n+1)/2;
             for (k = 0; k < bound; k++){
@@ -112,6 +120,7 @@ Grafo ConstruirGrafo() {
 
         if (g->name[y] != vector_i(con2,i)){
             //thead2
+            
             n = vector_size(find_index[y]);
             bound = (n % 2 == 0) ? n/2 : (n+1)/2;
             for (k = 0; k < bound; k++){
@@ -130,7 +139,7 @@ Grafo ConstruirGrafo() {
             g->vertex[y] = vector_init((int)coneccion_qty);
             g->init[y] = true;
         }
-            
+
         vector_pushback(g->vertex[x],y);
         vector_pushback(g->vertex[y],x);
         g->name[x] = vector_i(con1,i);
@@ -147,7 +156,7 @@ Grafo ConstruirGrafo() {
         if (init_fi[i])
             vector_destroy(find_index[i]);        
     }
-
+    free(next_free);
     free(find_index);
     free(init_fi);
     return g;
