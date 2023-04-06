@@ -87,9 +87,11 @@ Grafo ConstruirGrafo() {
         h = next_free[hash];
         while(g->name[h] && g->name[h]!=vi)
             h = hash_func(h+1,v_size);
-        next_free[hash] = h;
-        g->name[h] = vi;
-        vector_pushback(find_index[hash],h);
+        if (g->name[h]==vi) {
+            next_free[hash] = h;
+            g->name[h] = vi;
+            vector_pushback(find_index[hash],h);
+        }
     }
     vector_destroy(v);
     
