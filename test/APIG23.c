@@ -60,8 +60,10 @@ Grafo ConstruirGrafo() {
         }
         else if (g->name[hash] != x){
             vector_pushback(v,x);
-            find_index[hash] = vector_init(1);
-            init_fi[hash] = true;
+            if (!init_fi[hash]){
+                find_index[hash] = vector_init(1);
+                init_fi[hash] = true;
+            }
         }
         
         hash = hash_func(y,v_size);
@@ -71,8 +73,10 @@ Grafo ConstruirGrafo() {
         }
         else if (g->name[hash] != y){
             vector_pushback(v,y);
-            find_index[hash] = vector_init(1);
-            init_fi[hash] = true;
+            if (!init_fi[hash]){
+                find_index[hash] = vector_init(1);
+                init_fi[hash] = true;
+            }
         }
     }
 
