@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <math.h>
 #include "APIG23.h"
 #include "vector.h"
 
@@ -82,16 +81,23 @@ Grafo ConstruirGrafo() {
         vector_pushback(find_index[vi%v_size],hash);
     }
     vector_destroy(v);
-    u32 k;
+    u32 k,n,bound;
     /* Armar conexiones con el nuevo mapeo */
     double coneccion_qty = ceil((0.0001*g->E)/100);
     for (i = 0; i < g->E; i++) {
         x = hash_func(vector_i(con1,i),v_size);
         
         if (g->name[x] != vector_i(con1,i)){
-            for (k = 0; k < vector_size(find_index[x]); k++){
+            //thead1
+            n = vector_size(find_index[x]);
+            bound = (n % 2 == 0) ? n/2 : (n+1)/2;
+            for (k = 0; k < bound; k++){
                 if (g->name[vector_i(find_index[x],k)] == vector_i(con1,i)){
                     x = vector_i(find_index[x],k);
+                    break;
+                }
+                if (g->name[vector_i(find_index[x],(n-k-1))] == vector_i(con1,(n-k-1))){
+                    x = vector_i(find_index[x],(n-k-1));
                     break;
                 }
             }
@@ -105,15 +111,21 @@ Grafo ConstruirGrafo() {
         y = hash_func(vector_i(con2,i),v_size);
 
         if (g->name[y] != vector_i(con2,i)){
-            for (k = 0; k < vector_size(find_index[y]); k++){
+            //thead2
+            n = vector_size(find_index[y]);
+            bound = (n % 2 == 0) ? n/2 : (n+1)/2;
+            for (k = 0; k < bound; k++){
                 if (g->name[vector_i(find_index[y],k)] == vector_i(con2,i)){
                     y = vector_i(find_index[y],k);
+                    break;
+                }
+                if (g->name[vector_i(find_index[y],(n-k-1))] == vector_i(con2,(n-k-1))){
+                    y = vector_i(find_index[y],(n-k-1));
                     break;
                 }
             }
         }
 
-        
         if (!g->init[y]){
             g->vertex[y] = vector_init((int)coneccion_qty);
             g->init[y] = true;
@@ -132,13 +144,12 @@ Grafo ConstruirGrafo() {
         if(g->init[i])
             g->degree = max(g->degree,vector_size(g->vertex[i]));
         
-        //if (init_fi[i])
-        //    vector_destroy(finde_index[i]);
-        free(find_index);
-        free(init_fi);
-        
+        if (init_fi[i])
+            vector_destroy(find_index[i]);        
     }
 
+    free(find_index);
+    free(init_fi);
     return g;
 }
 
