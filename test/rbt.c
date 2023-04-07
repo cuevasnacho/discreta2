@@ -210,11 +210,16 @@ void inorder(struct node* root, Grafo g, u32* next_free,
     if (root == NULL)
         return;
     inorder(root->left, g, next_free, find_index, used);
-    
+
+    /* root->data es el elemento actual */
     u32 hash = hash_func(root->data,g->V);
     u32 h = next_free[hash];
+
+    /* Busco una posicion que no este usada */
     while(used[h])
         h = hash_func(h+1,g->V);
+
+    /* Asigno todos los valores necesarios */
     next_free[hash] = h;
     g->name[h] = root->data;
     used[h] = true;
@@ -228,10 +233,11 @@ void inorder(struct node* root, Grafo g, u32* next_free,
 
 static void set_destroy_r(struct node* node) {
     if (node == NULL)
-        return
+        return;
     set_destroy_r(node->right);
     set_destroy_r(node->left);
     
+    node->parent = NULL;
     free(node);
     node = NULL;
 }

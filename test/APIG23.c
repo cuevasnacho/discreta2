@@ -105,7 +105,7 @@ Grafo ConstruirGrafo() {
     /* Libero lo que ya no necesito */
     free(next_free);
     free(used);
-    //set_destroy(s);
+    set_destroy(s);
 
     /* Armar conexiones con el nuevo mapeo */
     double coneccion_qty = ceil((0.0001*g->E)/100);
