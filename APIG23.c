@@ -59,7 +59,11 @@ Grafo ConstruirGrafo() {
     set s = set_init();
     for(u32 i=0; i<g->E; i++) {
         u32 hash,x,y;
-        if (!scanf("%c %u %u\n",&c,&x,&y)) {
+        
+        if (i + 1 == g->E)
+            scanf("%c %u %u",&c,&x,&y);
+
+        else if (!scanf("%c %u %u\n",&c,&x,&y)) {
             printf("Error leyendo los valores");
             return NULL;
         }
@@ -98,7 +102,7 @@ Grafo ConstruirGrafo() {
             }
         }
     }
-    
+
     /* Encontrar un lugar para las coliciones */
     inorder(s->root, g, next_free, find_index, used);
 
