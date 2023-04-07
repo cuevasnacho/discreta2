@@ -1,165 +1,203 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-typedef unsigned int u32;
+#include "rbt.h"
 
-typedef struct node {
-    u32 value;
-    struct node *left;
-    struct node *right;
-    struct node *parent;
-    u32 color; // 0 for black, 1 for red
-} node;
+// Left Rotation
+void LeftRotate(struct node **root,struct node *x)
+{
+    if (!x || !x->right)
+        return ;
+    //y stored pointer of right child of x
+    struct node *y = x->right;
 
-node* create_node(u32 value) {
-    node *new_node = (node*) malloc(sizeof(node));
-    new_node->value = value;
-    new_node->left = NULL;
-    new_node->right = NULL;
-    new_node->color = 1; // new nodes are always red
-    return new_node;
-}
-
-void rotate_left(node **root, node *x) {
-    node *y = x->right;
+    //store y's left subtree's pointer as x's right child
     x->right = y->left;
-    if (y->left != NULL) {
-        y->left->parent = x;
-    }
+
+    //update parent pointer of x's right
+    if (x->right != NULL)
+        x->right->parent = x;
+
+    //update y's parent pointer
     y->parent = x->parent;
-    if (x->parent == NULL) {
-        *root = y;
-    } else if (x == x->parent->left) {
+
+    // if x's parent is null make y as root of tree
+    if (x->parent == NULL)
+        (*root) = y;
+
+    // store y at the place of x
+    else if (x == x->parent->left)
         x->parent->left = y;
-    } else {
-        x->parent->right = y;
-    }
+    else    x->parent->right = y;
+
+    // make x as left child of y
     y->left = x;
+
+    //update parent pointer of x
     x->parent = y;
 }
 
-void rotate_right(node **root, node *y) {
-    node *x = y->left;
+
+// Right Rotation (Similar to LeftRotate)
+void rightRotate(struct node **root,struct node *y)
+{
+    if (!y || !y->left)
+        return ;
+    struct node *x = y->left;
     y->left = x->right;
-    if (x->right != NULL) {
+    if (x->right != NULL)
         x->right->parent = y;
-    }
-    x->parent = y->parent;
-    if (y->parent == NULL) {
-        *root = x;
-    } 
-    else if (y == y->parent->left) {
+    x->parent =y->parent;
+    if (x->parent == NULL)
+        (*root) = x;
+    else if (y == y->parent->left)
         y->parent->left = x;
-    } 
-    else {
-        y->parent->right = x;
-    }
+    else y->parent->right = x;
     x->right = y;
     y->parent = x;
 }
 
-void fix_violation(node **root, node *z) {
-    while (z != *root && z->parent->color == 1) {
-        if (z->parent == z->parent->parent->left) {
-            node *y = z->parent->parent->right;
-            if (y != NULL && y->color == 1) {
-                z->parent->color = 0;
-                y->color = 0;
-                z->parent->parent->color = 1;
-                z = z->parent->parent;
-            } 
-            else {
-                if (z == z->parent->right) {
-                    z = z->parent;
-                    rotate_left(root, z);
-                }
-                z->parent->color = 0;
-                z->parent->parent->color = 1;
-                rotate_right(root, z->parent->parent);
+// Utility function to fixup the Red-Black tree after standard BST insertion
+void insertFixUp(struct node **root,struct node *z)
+{
+    // iterate until z is not the root and z's parent color is red
+    while (z != *root && z != (*root)->left && z != (*root)->right && z->parent->color == 'R')
+    {
+        struct node *y;
+
+        // Find uncle and store uncle in y
+        if (z->parent && z->parent->parent && z->parent == z->parent->parent->left)
+            y = z->parent->parent->right;
+        else
+            y = z->parent->parent->left;
+
+        // If uncle is RED, do following
+        // (i)  Change color of parent and uncle as BLACK
+        // (ii) Change color of grandparent as RED
+        // (iii) Move z to grandparent
+        if (!y)
+            z = z->parent->parent;
+        else if (y->color == 'R')
+        {
+            y->color = 'B';
+            z->parent->color = 'B';
+            z->parent->parent->color = 'R';
+            z = z->parent->parent;
+        }
+
+        // Uncle is BLACK, there are four cases (LL, LR, RL and RR)
+        else
+        {
+            // Left-Left (LL) case, do following
+            // (i)  Swap color of parent and grandparent
+            // (ii) Right Rotate Grandparent
+            if (z->parent == z->parent->parent->left &&
+                z == z->parent->left)
+            {
+                char ch = z->parent->color ;
+                z->parent->color = z->parent->parent->color;
+                z->parent->parent->color = ch;
+                rightRotate(root,z->parent->parent);
             }
-        } 
-        else {
-            node *y = z->parent->parent->left;
-            if (y != NULL && y->color == 1) {
-                z->parent->color = 0;
-                y->color = 0;
-                z->parent->parent->color = 1;
-                z = z->parent->parent;
-            } 
-            else {
-                if (z == z->parent->left) {
-                    z = z->parent;
-                    rotate_right(root, z);
-                }
-                z->parent->color = 0;
-                z->parent->parent->color = 1;
-                rotate_left(root, z->parent->parent);
+
+            // Left-Right (LR) case, do following
+            // (i)  Swap color of current node  and grandparent
+            // (ii) Left Rotate Parent
+            // (iii) Right Rotate Grand Parent
+            if (z->parent && z->parent->parent && z->parent == z->parent->parent->left &&
+                z == z->parent->right)
+            {
+                char ch = z->color ;
+                z->color = z->parent->parent->color;
+                z->parent->parent->color = ch;
+                LeftRotate(root,z->parent);
+                rightRotate(root,z->parent->parent);
+            }
+
+            // Right-Right (RR) case, do following
+            // (i)  Swap color of parent and grandparent
+            // (ii) Left Rotate Grandparent
+            if (z->parent && z->parent->parent &&
+                z->parent == z->parent->parent->right &&
+                z == z->parent->right)
+            {
+                char ch = z->parent->color ;
+                z->parent->color = z->parent->parent->color;
+                z->parent->parent->color = ch;
+                LeftRotate(root,z->parent->parent);
+            }
+
+            // Right-Left (RL) case, do following
+            // (i)  Swap color of current node  and grandparent
+            // (ii) Right Rotate Parent
+            // (iii) Left Rotate Grand Parent
+            if (z->parent && z->parent->parent && z->parent == z->parent->parent->right &&
+                z == z->parent->left)
+            {
+                char ch = z->color ;
+                z->color = z->parent->parent->color;
+                z->parent->parent->color = ch;
+                rightRotate(root,z->parent);
+                LeftRotate(root,z->parent->parent);
             }
         }
     }
-    (*root)->color = 0;
+    (*root)->color = 'B'; //keep root always black
 }
 
-void insert(node **root, u32 value) {
-    node *new_node = create_node(value);
-    node *x = *root;
-    node *y = NULL;
-    while (x != NULL) {
-        y = x;
-        if (new_node->value < x->value) {
+// Utility function to insert newly node in RedBlack tree
+void insert(struct node **root, u32 data)
+{
+    // Allocate memory for new node
+    struct node *z = (struct node*)malloc(sizeof(struct node));
+    z->data = data;
+    z->left = z->right = z->parent = NULL;
+
+     //if root is null make z as root
+    if (*root == NULL)
+    {
+        z->color = 'B';
+        (*root) = z;
+    }
+    else
+    {
+        struct node *y = NULL;
+        struct node *x = (*root);
+
+        // Follow standard BST insert steps to first insert the node
+        while (x != NULL)
+        {
+            y = x;
+            if (z->data < x->data)
+                x = x->left;
+            else
+                x = x->right;
+        }
+        z->parent = y;
+        if (z->data > y->data)
+            y->right = z;
+        else
+            y->left = z;
+        z->color = 'R';
+
+        // call insertFixUp to fix reb-black tree's property if it
+        // is voilated due to insertion.
+        insertFixUp(root,z);
+    }
+}
+
+bool belong(struct node **root, u32 num)
+{
+    struct node *x = (*root);
+
+    // Follow standard BST insert steps to first insert the node
+    while (x !=NULL) {
+        if (num < x->data)
             x = x->left;
-        } 
-        else {
+        else if (num > x->data)
             x = x->right;
-        }
-    }
-    new_node->parent = y;
-    if (y == NULL) {
-        *root = new_node;
-    } 
-    else if (new_node->value < y->value) {
-        y->left = new_node;
-    } 
-    else {
-        y->right = new_node;
-    }
-    fix_violation(root, new_node);
-}
-
-bool belong(node *root, u32 value) {
-    while (root != NULL) {
-        if (value == root->value) {
+        else
             return true;
-        } else if (value < root->value) {
-            root = root->left;
-        } else {
-            root = root->right;
-        }
     }
     return false;
 }
-void destroy_tree(node *root) {
-    if (root != NULL) {
-        destroy_tree(root->left);
-        destroy_tree(root->right);
-        free(root);
-    }
-}
-
-/*
-u32 main() {
-    node *root = NULL;
-    insert(&root, 7);
-    insert(&root, 6);
-    insert(&root, 5);
-    insert(&root, 4);
-    insert(&root, 3);
-    insert(&root, 2);
-    insert(&root, 1);
-    printf("Inorder traversal of the red-black tree: ");
-    //inorder_traversal(root);
-    printf("El elemento %d\n",belong(root,7));
-    printf("EL elemento 1222 %d\n",belong(root,1222));
-    return 0;
-}
-*/

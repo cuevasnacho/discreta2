@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "APIG23.h"
 #include "vector.h"
-#include "rbt.c"
+#include "rbt.h"
 
 inline static u32 hash_func(u32 a, u32 size){
     return a%size;
@@ -47,7 +47,7 @@ Grafo ConstruirGrafo() {
     u32* next_free = (u32*)calloc(g->V, sizeof(u32));
     bool* init_fi = (bool*)calloc(g->V, sizeof(bool));
     /* Pedir los lados y ubicar los primeros vertices */
-    node *root = NULL;
+    node* root = NULL;
     for(i=0; i<g->E; i++) {
         if (!scanf("%c %d %d\n",&c,&x,&y))
             printf("Error leyendo los valores");
@@ -61,9 +61,9 @@ Grafo ConstruirGrafo() {
             next_free[hash] = hash;
         }
         else if (g->name[hash] != x){
-            if (!belong(root,x)){
+            if (!belong(&root,x)){
                 vector_pushback(v,x);
-                insert(root,x);
+                insert(&root,x);
             }
             
             if (!init_fi[hash]){
@@ -78,9 +78,9 @@ Grafo ConstruirGrafo() {
             next_free[hash] = hash;
         }
         else if (g->name[hash] != y){
-            if (!belong(root,x)){
+            if (!belong(&root,x)){
                 vector_pushback(v,y);
-                insert(root,x);
+                insert(&root,x);
             }
             if (!init_fi[hash]){
                 find_index[hash] = vector_init(1);
@@ -165,7 +165,7 @@ Grafo ConstruirGrafo() {
         if (init_fi[i])
             vector_destroy(find_index[i]);        
     }
-    destroy_tree(root);
+    //destroy_tree(root);
     free(next_free);
     free(find_index);
     free(init_fi);
