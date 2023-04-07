@@ -13,9 +13,8 @@ inline static u32 max(u32 a, u32 b) {
 
 /* Constructores */
 Grafo ConstruirGrafo() {
-    u32 v_size,hash,x,y;
-    char c;
     Grafo g = (Grafo)malloc(sizeof(GrafoSt));
+    char c;
     if (g == NULL)
         printf("Error pidiendo memoria \n");
     while ((c = getchar()) != EOF) {
@@ -39,7 +38,6 @@ Grafo ConstruirGrafo() {
             return NULL;
     }
     
-    v_size = g->V;
     vector con1 = vector_init(g->E);
     vector con2 = vector_init(g->E);
     vector* find_index = (vector*)calloc(g->V, sizeof(vector));
@@ -50,13 +48,14 @@ Grafo ConstruirGrafo() {
     /* Pedir los lados y ubicar los primeros vertices */
     set s = set_init();
     for(u32 i=0; i<g->E; i++) {
+        u32 hash,x,y;
         if (!scanf("%c %u %u\n",&c,&x,&y))
             printf("Error leyendo los valores");
         
         vector_pushback(con1,x);
         vector_pushback(con2,y);
         
-        hash = hash_func(x,v_size);
+        hash = hash_func(x,g->V);
         if (!used[hash]){
             g->name[hash] = x;
             next_free[hash] = hash;
@@ -71,7 +70,7 @@ Grafo ConstruirGrafo() {
             }
         }
         
-        hash = hash_func(y,v_size);
+        hash = hash_func(y,g->V);
         if (!used[hash]){
             g->name[hash] = y;
             next_free[hash] = hash;
@@ -89,13 +88,15 @@ Grafo ConstruirGrafo() {
     
     /* Encontrar un lugar para las coliciones */
     inorder(s->root, g, next_free, find_index, used);
+    free(next_free);
     free(used);
-
     //set_destroy(s);
+
     /* Armar conexiones con el nuevo mapeo */
     double coneccion_qty = ceil((0.0001*g->E)/100);
     for (u32 i=0,k,n; i < g->E; i++) {
-        x = hash_func(vector_i(con1,i),v_size);
+        u32 x,y;
+        x = hash_func(vector_i(con1,i),g->V);
         
         if (g->name[x] != vector_i(con1,i)){
             n = vector_size(find_index[x]);
@@ -112,7 +113,7 @@ Grafo ConstruirGrafo() {
             g->init[x] = true;
         }
 
-        y = hash_func(vector_i(con2,i),v_size);
+        y = hash_func(vector_i(con2,i),g->V);
 
         if (g->name[y] != vector_i(con2,i)){
             n = vector_size(find_index[y]);
@@ -144,7 +145,6 @@ Grafo ConstruirGrafo() {
             vector_destroy(find_index[i]);
     }
 
-    free(next_free);
     free(find_index);
     free(init_fi);
 
@@ -180,7 +180,6 @@ u32 Delta(Grafo G){
 }
 
 /* Informacion de los Vertices */
-
 u32 Nombre(u32 i,Grafo G){
     return G->name[i];
 }
