@@ -42,14 +42,13 @@ Grafo ConstruirGrafo() {
     v_size = g->V;
     vector con1 = vector_init(g->E);
     vector con2 = vector_init(g->E);
-    vector v = vector_init(v_size);
     vector* find_index = (vector*)calloc(g->V, sizeof(vector));
     u32* next_free = (u32*)calloc(g->V, sizeof(u32));
     bool* init_fi = (bool*)calloc(g->V, sizeof(bool));
 
     /* Pedir los lados y ubicar los primeros vertices */
+    set s = set_init();
     for(i=0; i<g->E; i++) {
-        set s = set_init();
         if (!scanf("%c %d %d\n",&c,&x,&y))
             printf("Error leyendo los valores");
         
@@ -62,10 +61,7 @@ Grafo ConstruirGrafo() {
             next_free[hash] = hash;
         }
         else if (g->name[hash] != x){
-            if (!set_belong(&s,x)){
-                vector_pushback(v,x);
-                set_insert(&s,x);
-            }
+            set_insert(s,x);
             
             if (!init_fi[hash]){
                 find_index[hash] = vector_init(1);
@@ -79,10 +75,8 @@ Grafo ConstruirGrafo() {
             next_free[hash] = hash;
         }
         else if (g->name[hash] != y){
-            if (!set_belong(&s,y)){
-                vector_pushback(v,y);
-                set_insert(&s,y);
-            }
+            set_insert(s,y);
+            
             if (!init_fi[hash]){
                 find_index[hash] = vector_init(1);
                 init_fi[hash] = true;
@@ -91,17 +85,7 @@ Grafo ConstruirGrafo() {
     }
     
     /* Encontrar un lugar para las coliciones */
-    for (u32 i = 0,h; i < vector_size(v); i++){
-        u32 vi = vector_i(v,i);
-        hash = hash_func(vi,v_size);
-        h = next_free[hash];
-        while(g->name[h])
-            h = hash_func(h+1,v_size);
-        next_free[hash] = h;
-        g->name[h] = vi;
-        vector_pushback(find_index[hash],h);
-    }
-    vector_destroy(v);
+    inorder(s->root, g, next_free, find_index);
     
     /* Armar conexiones con el nuevo mapeo */
     double coneccion_qty = ceil((0.0001*g->E)/100);

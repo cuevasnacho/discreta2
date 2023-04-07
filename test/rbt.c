@@ -152,27 +152,31 @@ static void insertFixUp(struct node **root,struct node *z)
 }
 
 set set_init() {
-    return NULL;
+    set s = (set)malloc(sizeof(set_r));
+    s->root = NULL;
+    s->size = 0;
+    return s;
 }
 
 // Utility function to insert newly node in RedBlack tree
-void set_insert(struct node **root, u32 data)
+void set_insert(set s, u32 data)
 {
+    ++s->size;
     // Allocate memory for new node
     struct node *z = (struct node*)malloc(sizeof(struct node));
     z->data = data;
     z->left = z->right = z->parent = NULL;
 
      //if root is null make z as root
-    if (*root == NULL)
+    if (s->root == NULL)
     {
         z->color = 'B';
-        (*root) = z;
+        s->root = z;
     }
     else
     {
         struct node *y = NULL;
-        struct node *x = (*root);
+        struct node *x = (s->root);
 
         // Follow standard BST insert steps to first insert the node
         while (x != NULL)
@@ -183,6 +187,7 @@ void set_insert(struct node **root, u32 data)
             else if (z->data > x->data)
                 x = x->right;
             else {
+                --s->size;
                 free(z);
                 z = NULL;
                 return;
@@ -197,13 +202,13 @@ void set_insert(struct node **root, u32 data)
 
         // call insertFixUp to fix reb-black tree's property if it
         // is voilated due to insertion.
-        insertFixUp(root,z);
+        insertFixUp(&s->root,z);
     }
 }
 
-bool set_belong(struct node **root, u32 num)
+bool set_belong(set s, u32 num)
 {
-    struct node *x = (*root);
+    struct node *x = (s->root);
 
     // Follow standard BST insert steps to first insert the node
     while (x !=NULL) {
@@ -216,17 +221,33 @@ bool set_belong(struct node **root, u32 num)
     }
     return false;
 }
-/*
-void inorder(struct node *root)
+
+u32 set_size(set s) {
+    return s->size;
+}
+
+static u32 hash_func(u32 num, u32 size) {
+    return num%size;
+}
+
+void inorder(struct node* root, Grafo g, u32* next_free,
+             vector* find_index)
 {
     static u32 last = 0;
     if (root == NULL)
         return;
-    inorder(root->left);
-    printf("%d ", root->data);
+    inorder(root->left, g, next_free, find_index);
+    
+    u32 hash = hash_func(root->data,g->V);
+    u32 h = next_free[hash];
+    while(g->name[h])
+        h = hash_func(h+1,g->V);
+    next_free[hash] = h;
+    g->name[h] = root->data;
+    vector_pushback(find_index[hash],h);
+
     if (root->data < last)
         printf("\nPUTE\n");
     last = root->data;
-    inorder(root->right);
+    inorder(root->right, g, next_free, find_index);
 }
-*/
