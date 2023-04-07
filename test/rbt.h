@@ -19,18 +19,17 @@ typedef struct set_r* set;
 // Initialize set
 set set_init();
 
-// Utility function to insert newly node in RedBlack tree
+// Inserts data into the set
 void set_insert(set s, u32 data);
 
-// Utility function to check if a node belongs to a tree
-bool set_belong(set s, u32 num);
-
-// Utility function to check the size of a tree
+// Returns the size of the set
 u32 set_size(set s);
 
+// Specific function to organize collisions
 void inorder(struct node* root, Grafo g, u32* next_free,
              vector* find_index, bool* used);
 
+// Destroys the set
 void set_destroy(set s);
 
 #endif

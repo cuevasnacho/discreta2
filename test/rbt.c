@@ -9,9 +9,7 @@ typedef struct node {
     struct node *left, *right, *parent;
 } node;
 
-// Left Rotation
-static void LeftRotate(struct node **root,struct node *x)
-{
+static void LeftRotate(struct node **root,struct node *x) {
     if (!x || !x->right)
         return ;
     //y stored pointer of right child of x
@@ -43,10 +41,7 @@ static void LeftRotate(struct node **root,struct node *x)
     x->parent = y;
 }
 
-
-// Right Rotation (Similar to LeftRotate)
-static void rightRotate(struct node **root,struct node *y)
-{
+static void rightRotate(struct node **root,struct node *y) {
     if (!y || !y->left)
         return ;
     struct node *x = y->left;
@@ -63,12 +58,9 @@ static void rightRotate(struct node **root,struct node *y)
     y->parent = x;
 }
 
-// Utility function to fixup the Red-Black tree after standard BST insertion
-static void insertFixUp(struct node **root,struct node *z)
-{
+static void insertFixUp(struct node **root,struct node *z) {
     // iterate until z is not the root and z's parent color is red
-    while (z != *root && z != (*root)->left && z != (*root)->right && z->parent->color == 'R')
-    {
+    while (z != *root && z != (*root)->left && z != (*root)->right && z->parent->color == 'R') {
         struct node *y;
 
         // Find uncle and store uncle in y
@@ -83,8 +75,7 @@ static void insertFixUp(struct node **root,struct node *z)
         // (iii) Move z to grandparent
         if (!y)
             z = z->parent->parent;
-        else if (y->color == 'R')
-        {
+        else if (y->color == 'R') {
             y->color = 'B';
             z->parent->color = 'B';
             z->parent->parent->color = 'R';
@@ -92,8 +83,7 @@ static void insertFixUp(struct node **root,struct node *z)
         }
 
         // Uncle is BLACK, there are four cases (LL, LR, RL and RR)
-        else
-        {
+        else {
             // Left-Left (LL) case, do following
             // (i)  Swap color of parent and grandparent
             // (ii) Right Rotate Grandparent
@@ -158,7 +148,6 @@ set set_init() {
     return s;
 }
 
-// Utility function to insert newly node in RedBlack tree
 void set_insert(set s, u32 data)
 {
     ++s->size;
@@ -204,22 +193,6 @@ void set_insert(set s, u32 data)
         // is voilated due to insertion.
         insertFixUp(&s->root,z);
     }
-}
-
-bool set_belong(set s, u32 num)
-{
-    struct node *x = (s->root);
-
-    // Follow standard BST insert steps to first insert the node
-    while (x !=NULL) {
-        if (num < x->data)
-            x = x->left;
-        else if (num > x->data)
-            x = x->right;
-        else
-            return true;
-    }
-    return false;
 }
 
 u32 set_size(set s) {
