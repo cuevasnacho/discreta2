@@ -251,3 +251,19 @@ void inorder(struct node* root, Grafo g, u32* next_free,
     last = root->data;
     inorder(root->right, g, next_free, find_index);
 }
+
+static void set_destroy_r(struct node* node) {
+    if (node->left != NULL)
+        set_destroy_r(node->left);
+    if (node->right != NULL)
+    set_destroy_r(node->right);
+    node->parent = NULL;
+    free(node);
+    node = NULL;
+}
+
+void set_destroy(set s) {
+    set_destroy_r(s->root);
+    free(s);
+    s = NULL;
+}

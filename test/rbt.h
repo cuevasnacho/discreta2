@@ -31,4 +31,6 @@ u32 set_size(set s);
 void inorder(struct node* root, Grafo g, u32* next_free,
              vector* find_index);
 
+void set_destroy(set s);
+
 #endif

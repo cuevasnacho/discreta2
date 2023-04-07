@@ -86,6 +86,8 @@ Grafo ConstruirGrafo() {
     
     /* Encontrar un lugar para las coliciones */
     inorder(s->root, g, next_free, find_index);
+
+    set_destroy(s);
     
     /* Armar conexiones con el nuevo mapeo */
     double coneccion_qty = ceil((0.0001*g->E)/100);
