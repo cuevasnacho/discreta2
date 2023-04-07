@@ -231,33 +231,34 @@ static u32 hash_func(u32 num, u32 size) {
 }
 
 void inorder(struct node* root, Grafo g, u32* next_free,
-             vector* find_index)
+             vector* find_index, bool* used)
 {
     static u32 last = 0;
     if (root == NULL)
         return;
-    inorder(root->left, g, next_free, find_index);
+    inorder(root->left, g, next_free, find_index, used);
     
     u32 hash = hash_func(root->data,g->V);
     u32 h = next_free[hash];
-    while(g->name[h])
+    while(used[h])
         h = hash_func(h+1,g->V);
     next_free[hash] = h;
     g->name[h] = root->data;
+    used[h] = true;
     vector_pushback(find_index[hash],h);
 
     if (root->data < last)
         printf("\nPUTE\n");
     last = root->data;
-    inorder(root->right, g, next_free, find_index);
+    inorder(root->right, g, next_free, find_index, used);
 }
 
 static void set_destroy_r(struct node* node) {
-    if (node->left != NULL)
-        set_destroy_r(node->left);
-    if (node->right != NULL)
+    if (node == NULL)
+        return
     set_destroy_r(node->right);
-    node->parent = NULL;
+    set_destroy_r(node->left);
+    
     free(node);
     node = NULL;
 }

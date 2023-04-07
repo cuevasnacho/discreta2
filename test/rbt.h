@@ -29,7 +29,7 @@ bool set_belong(set s, u32 num);
 u32 set_size(set s);
 
 void inorder(struct node* root, Grafo g, u32* next_free,
-             vector* find_index);
+             vector* find_index, bool* used);
 
 void set_destroy(set s);
 

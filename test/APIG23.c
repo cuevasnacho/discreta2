@@ -13,7 +13,7 @@ inline static u32 max(u32 a, u32 b) {
 
 /* Constructores */
 Grafo ConstruirGrafo() {
-    u32 v_size,i,hash,x,y;
+    u32 v_size,hash,x,y;
     char c;
     Grafo g = (Grafo)malloc(sizeof(GrafoSt));
     if (g == NULL)
@@ -45,10 +45,11 @@ Grafo ConstruirGrafo() {
     vector* find_index = (vector*)calloc(g->V, sizeof(vector));
     u32* next_free = (u32*)calloc(g->V, sizeof(u32));
     bool* init_fi = (bool*)calloc(g->V, sizeof(bool));
+    bool* used = (bool*)calloc(g->V,sizeof(bool));
 
     /* Pedir los lados y ubicar los primeros vertices */
     set s = set_init();
-    for(i=0; i<g->E; i++) {
+    for(u32 i=0; i<g->E; i++) {
         if (!scanf("%c %u %u\n",&c,&x,&y))
             printf("Error leyendo los valores");
         
@@ -56,9 +57,10 @@ Grafo ConstruirGrafo() {
         vector_pushback(con2,y);
         
         hash = hash_func(x,v_size);
-        if (!g->name[hash]){
+        if (!used[hash]){
             g->name[hash] = x;
             next_free[hash] = hash;
+            used[hash] = true;
         }
         else if (g->name[hash] != x){
             set_insert(s,x);
@@ -70,9 +72,10 @@ Grafo ConstruirGrafo() {
         }
         
         hash = hash_func(y,v_size);
-        if (!g->name[hash]){
+        if (!used[hash]){
             g->name[hash] = y;
             next_free[hash] = hash;
+            used[hash] = true;
         }
         else if (g->name[hash] != y){
             set_insert(s,y);
@@ -85,13 +88,13 @@ Grafo ConstruirGrafo() {
     }
     
     /* Encontrar un lugar para las coliciones */
-    inorder(s->root, g, next_free, find_index);
+    inorder(s->root, g, next_free, find_index, used);
+    free(used);
 
     //set_destroy(s);
-    
     /* Armar conexiones con el nuevo mapeo */
     double coneccion_qty = ceil((0.0001*g->E)/100);
-    for (u32 i = 0,k,n; i < g->E; i++) {
+    for (u32 i=0,k,n; i < g->E; i++) {
         x = hash_func(vector_i(con1,i),v_size);
         
         if (g->name[x] != vector_i(con1,i)){
@@ -133,17 +136,18 @@ Grafo ConstruirGrafo() {
     vector_destroy(con2);
 
     /* Calcular el delta del grafo */
-    for (i=0; i<g->V; ++i) {
+    for (u32 i=0; i<g->V; ++i) {
         if(g->init[i])
             g->degree = max(g->degree,vector_size(g->vertex[i]));
         
         if (init_fi[i])
-            vector_destroy(find_index[i]);        
+            vector_destroy(find_index[i]);
     }
-    //destroy_tree(root);
+
     free(next_free);
     free(find_index);
     free(init_fi);
+
     return g;
 }
 
