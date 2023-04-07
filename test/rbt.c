@@ -3,8 +3,14 @@
 #include <stdbool.h>
 #include "rbt.h"
 
+typedef struct node {
+    u32 data;
+    char color;
+    struct node *left, *right, *parent;
+} node;
+
 // Left Rotation
-void LeftRotate(struct node **root,struct node *x)
+static void LeftRotate(struct node **root,struct node *x)
 {
     if (!x || !x->right)
         return ;
@@ -39,7 +45,7 @@ void LeftRotate(struct node **root,struct node *x)
 
 
 // Right Rotation (Similar to LeftRotate)
-void rightRotate(struct node **root,struct node *y)
+static void rightRotate(struct node **root,struct node *y)
 {
     if (!y || !y->left)
         return ;
@@ -58,7 +64,7 @@ void rightRotate(struct node **root,struct node *y)
 }
 
 // Utility function to fixup the Red-Black tree after standard BST insertion
-void insertFixUp(struct node **root,struct node *z)
+static void insertFixUp(struct node **root,struct node *z)
 {
     // iterate until z is not the root and z's parent color is red
     while (z != *root && z != (*root)->left && z != (*root)->right && z->parent->color == 'R')
@@ -145,8 +151,12 @@ void insertFixUp(struct node **root,struct node *z)
     (*root)->color = 'B'; //keep root always black
 }
 
+set set_init() {
+    return NULL;
+}
+
 // Utility function to insert newly node in RedBlack tree
-void insert(struct node **root, u32 data)
+void set_insert(struct node **root, u32 data)
 {
     // Allocate memory for new node
     struct node *z = (struct node*)malloc(sizeof(struct node));
@@ -170,8 +180,13 @@ void insert(struct node **root, u32 data)
             y = x;
             if (z->data < x->data)
                 x = x->left;
-            else
+            else if (z->data > x->data)
                 x = x->right;
+            else {
+                free(z);
+                z = NULL;
+                return;
+            }
         }
         z->parent = y;
         if (z->data > y->data)
@@ -186,7 +201,7 @@ void insert(struct node **root, u32 data)
     }
 }
 
-bool belong(struct node **root, u32 num)
+bool set_belong(struct node **root, u32 num)
 {
     struct node *x = (*root);
 
@@ -201,3 +216,17 @@ bool belong(struct node **root, u32 num)
     }
     return false;
 }
+/*
+void inorder(struct node *root)
+{
+    static u32 last = 0;
+    if (root == NULL)
+        return;
+    inorder(root->left);
+    printf("%d ", root->data);
+    if (root->data < last)
+        printf("\nPUTE\n");
+    last = root->data;
+    inorder(root->right);
+}
+*/

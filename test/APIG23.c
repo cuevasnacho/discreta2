@@ -46,9 +46,10 @@ Grafo ConstruirGrafo() {
     vector* find_index = (vector*)calloc(g->V, sizeof(vector));
     u32* next_free = (u32*)calloc(g->V, sizeof(u32));
     bool* init_fi = (bool*)calloc(g->V, sizeof(bool));
+
     /* Pedir los lados y ubicar los primeros vertices */
-    node* root = NULL;
     for(i=0; i<g->E; i++) {
+        set s = set_init();
         if (!scanf("%c %d %d\n",&c,&x,&y))
             printf("Error leyendo los valores");
         
@@ -61,9 +62,9 @@ Grafo ConstruirGrafo() {
             next_free[hash] = hash;
         }
         else if (g->name[hash] != x){
-            if (!belong(&root,x)){
+            if (!set_belong(&s,x)){
                 vector_pushback(v,x);
-                insert(&root,x);
+                set_insert(&s,x);
             }
             
             if (!init_fi[hash]){
@@ -78,9 +79,9 @@ Grafo ConstruirGrafo() {
             next_free[hash] = hash;
         }
         else if (g->name[hash] != y){
-            if (!belong(&root,x)){
+            if (!set_belong(&s,y)){
                 vector_pushback(v,y);
-                insert(&root,x);
+                set_insert(&s,y);
             }
             if (!init_fi[hash]){
                 find_index[hash] = vector_init(1);
@@ -98,7 +99,7 @@ Grafo ConstruirGrafo() {
             h = hash_func(h+1,v_size);
         next_free[hash] = h;
         g->name[h] = vi;
-        vector_pushback(find_index[hash],h);    
+        vector_pushback(find_index[hash],h);
     }
     vector_destroy(v);
     
