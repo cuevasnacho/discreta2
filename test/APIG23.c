@@ -25,7 +25,7 @@ Grafo ConstruirGrafo() {
         }
         else if (c == 'p') {
             char word[5];
-            if (!scanf("%4s %d %d\n",word,&g->V,&g->E))
+            if (!scanf("%4s %u %u\n",word,&g->V,&g->E))
                 printf("Error leyendo los valores");
             g->vertex = (vector*)calloc(g->V, sizeof(vector));
             g->name = (u32*)calloc(g->V, sizeof(u32));
@@ -49,7 +49,7 @@ Grafo ConstruirGrafo() {
     /* Pedir los lados y ubicar los primeros vertices */
     set s = set_init();
     for(i=0; i<g->E; i++) {
-        if (!scanf("%c %d %d\n",&c,&x,&y))
+        if (!scanf("%c %u %u\n",&c,&x,&y))
             printf("Error leyendo los valores");
         
         vector_pushback(con1,x);
@@ -87,23 +87,18 @@ Grafo ConstruirGrafo() {
     /* Encontrar un lugar para las coliciones */
     inorder(s->root, g, next_free, find_index);
 
-    set_destroy(s);
+    //set_destroy(s);
     
     /* Armar conexiones con el nuevo mapeo */
     double coneccion_qty = ceil((0.0001*g->E)/100);
-    for (u32 i = 0,k,n,bound; i < g->E; i++) {
+    for (u32 i = 0,k,n; i < g->E; i++) {
         x = hash_func(vector_i(con1,i),v_size);
         
         if (g->name[x] != vector_i(con1,i)){
             n = vector_size(find_index[x]);
-            bound = (n % 2 == 0) ? n/2 : (n+1)/2;
-            for (k = 0; k < bound; k++){
+            for (k = 0; k < n; k++){
                 if (g->name[vector_i(find_index[x],k)] == vector_i(con1,i)){
                     x = vector_i(find_index[x],k);
-                    break;
-                }
-                if (g->name[vector_i(find_index[x],(n-k-1))] == vector_i(con1,(n-k-1))){
-                    x = vector_i(find_index[x],(n-k-1));
                     break;
                 }
             }
@@ -118,14 +113,9 @@ Grafo ConstruirGrafo() {
 
         if (g->name[y] != vector_i(con2,i)){
             n = vector_size(find_index[y]);
-            bound = (n % 2 == 0) ? n/2 : (n+1)/2;
-            for (k = 0; k < bound; k++){
+            for (k = 0; k < n; k++){
                 if (g->name[vector_i(find_index[y],k)] == vector_i(con2,i)){
                     y = vector_i(find_index[y],k);
-                    break;
-                }
-                if (g->name[vector_i(find_index[y],(n-k-1))] == vector_i(con2,(n-k-1))){
-                    y = vector_i(find_index[y],(n-k-1));
                     break;
                 }
             }
@@ -138,8 +128,6 @@ Grafo ConstruirGrafo() {
 
         vector_pushback(g->vertex[x],y);
         vector_pushback(g->vertex[y],x);
-        g->name[x] = vector_i(con1,i);
-        g->name[y] = vector_i(con2,i);
     }
     vector_destroy(con1);
     vector_destroy(con2);
