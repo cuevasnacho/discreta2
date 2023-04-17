@@ -45,7 +45,7 @@ Nuestro algoritmo tienen los siguientes tiempos en peor y mejor caso, hablando s
 
 #### Posibles mejoras
 
-- Si se cambiara la funcion de hash por una mas compleja, lo que significa que va a haber menos coliciones el tiempo de ejecucion del peor caso bajaria drasticamente
+- Si se cambiara la funcion de hash por una mas compleja, lo que significa que va a haber menos coliciones el tiempo de ejecucion del peor caso bajaria drasticamente, sin contar que no seria de falta el uso de rbt y el over-head que produce
 - Todo el proyecto seria mejor diseñado y con mas rendimiento si fuera implementado en C++
 
 
