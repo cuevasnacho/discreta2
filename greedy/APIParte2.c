@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdbool.h>
 #include "APIParte2.h"
 
@@ -43,24 +44,51 @@ u32 Greedy(Grafo G,u32* Orden,u32* Color) {
     return max_color+1;
 }
 
-/*
-Esta funcion asume que Orden y Color apuntan a un sector de memoria con al menos n lugares. Tambien asume que la
-imagen de Color[] es un conjunto {0, 1, ..., r − 1} para algun r.
-Ordena indices llenando el array Orden poniendo primero los indices i tal que Color[i] sea igual al mayor impar en
-{0, 1, ..., r − 1}, luego los indices i tal que Color[i] es igual el segundo mayor impar, etc hasta terminar con los impares. Luego
-pone los indices i tal que Color[i] es el mayor par, luego el segundo mayor par, etc.
-Observacion: Aca no es necesaria la estructura de G, solo n.
-Si todo anduvo bien devuelve el char 0, si no el char 1. (razones por la que podria andar mal es que hagan un alloc de
-memoria auxiliar y el mismo falle)
-*/
 char OrdenImparPar(u32 n,u32* Orden,u32* Color) {
-    u32 mayorImpar = (n%2) ? n : n-1;
-    u32 j = 0;
-    for (u32 i = 0; i < n; ++i) {
-        
+    // funcion para comparar entre F(x)
+    int compare (const void *a, const void *b) {
+        u32 *x = (u32 *)a;
+        u32 *y = (u32 *)b;
+
+        if (Color[*x]%2 == Color[*y]%2)
+            return (Color[*y] - Color[*x]);
+        else
+            if (Color[*x]%2)
+                return 1;
+            else
+                return -1;
     }
+
+    // ordeno los vertices con la funcion custom
+    qsort(Orden, n, sizeof(u32), compare);
+
+    return '0';
 }
 
 char OrdenJedi(Grafo G,u32* Orden,u32* Color) {
+    u32* sums = calloc(NumeroDeVertices(G), sizeof(u32));
     
+    // calculo F(x) para cada color
+    for (u32 i = 0; i < NumeroDeVertices(G); ++i) {
+        sums[Color[i]] += Grado(i,G);
+    }
+    for (u32 i = 0; i < NumeroDeVertices(G); ++i) {
+        if (sums[i]) sums[i] *= i;
+        else break;
+    }
+    // funcion para comparar entre F(x)
+    int compare (const void *a, const void *b) {
+        u32 *x = (u32 *)a;
+        u32 *y = (u32 *)b;
+        
+        return (sums[*y] - sums[*x]);
+    }
+
+    // ordeno los vertices con la funcion custom
+    qsort(Orden, NumeroDeVertices(G), sizeof(u32), compare);
+
+    free(sums);
+    sums = NULL;
+
+    return '0';
 }

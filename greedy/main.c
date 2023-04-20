@@ -8,10 +8,21 @@ int main(void) {
     for (u32 i=0; i<NumeroDeVertices(g); ++i) {
         Orden[i]=i;
     }
-
+    
     u32 colores = Greedy(g,Orden,Color);
-
     printf("%u\n",colores);
+    char c = OrdenJedi(g,Orden,Color);
+    colores = Greedy(g,Orden,Color);
+    printf("%u\n",colores);
+    c = OrdenImparPar(NumeroDeVertices(g),Orden,Color);
+    colores = Greedy(g,Orden,Color);
+    printf("%u\n",colores);
+
+    DestruirGrafo(g);
+    free(Color);
+    Color = NULL;
+    free(Orden);
+    Orden = NULL;
 
     return 0;
 }
