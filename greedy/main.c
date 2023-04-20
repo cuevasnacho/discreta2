@@ -12,10 +12,6 @@ int main(void) {
     u32 colores = Greedy(g,Orden,Color);
 
     printf("%u\n",colores);
-    for (u32 i=0; i<NumeroDeVertices(g); ++i) {
-        printf("%u ",Color[i]);
-    }
-    printf("\n");
 
     return 0;
 }
