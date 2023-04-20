@@ -54,9 +54,9 @@ char OrdenImparPar(u32 n,u32* Orden,u32* Color) {
             return (Color[*y] - Color[*x]);
         else
             if (Color[*x]%2)
-                return 1;
-            else
                 return -1;
+            else
+                return 1;
     }
 
     // ordeno los vertices con la funcion custom
