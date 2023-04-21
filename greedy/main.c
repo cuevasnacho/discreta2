@@ -5,7 +5,7 @@ int main(void) {
     Grafo g = ConstruirGrafo();
     u32* Color1 = calloc(NumeroDeVertices(g), sizeof(u32));
     u32* Color2 = calloc(NumeroDeVertices(g), sizeof(u32));
-    u32* Orden = calloc(NumeroDeVertices(g), sizeof(u32));
+    u32* __restrict__ Orden = calloc(NumeroDeVertices(g), sizeof(u32));
     u32 min_coloreo,greedy_out;
     u32* swap;   
     /* Asigno orden natural*/

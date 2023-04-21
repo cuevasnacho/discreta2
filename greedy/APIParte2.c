@@ -9,8 +9,13 @@ inline static u32 max(u32 x, u32 y) {
 u32 Greedy(Grafo G,u32* Orden,u32* Color) {
     u32 V = NumeroDeVertices(G);
     u32 max_color = 1;
-    bool* coloured = calloc(V, sizeof(bool));   // dice si el i-esimo nodo esta coloreado
-    bool* num_set = calloc(V, sizeof(bool));    // dice si el i-esimo color esta usado
+    bool* __restrict__ coloured = calloc(V, sizeof(bool));   // dice si el i-esimo nodo esta coloreado
+    bool* __restrict__ num_set = calloc(V, sizeof(bool));    // dice si el i-esimo color esta usado
+
+    if (coloured == NULL || num_set == NULL){
+        printf("Error en greedy \n");
+        return MAX_RANGE;
+    }
 
     Color[Orden[0]] = 0;
     coloured[Orden[0]] = true;
@@ -72,8 +77,12 @@ char OrdenImparPar(u32 n,u32* Orden,u32* Color) {
 }
 
 char OrdenJedi(Grafo G,u32* Orden,u32* Color) {
-    u32* sums = calloc(NumeroDeVertices(G), sizeof(u32));
+    u32* __restrict__ sums = calloc(NumeroDeVertices(G), sizeof(u32));
     
+    if (sums == NULL){
+        printf("Error en orden jedi \n");
+        return MAX_RANGE;
+    }
     // calculo F(x) para cada color
     for (u32 i = 1; i < NumeroDeVertices(G); ++i) {
         sums[Color[i]] += Grado(i,G);
