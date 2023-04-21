@@ -23,17 +23,17 @@ int main(void) {
         }
 
         /* [1] */
-        if (OrdenImparPar(NumeroDeVertices(g),Orden,Color1) == SUCCESS){
+        if (OrdenImparPar(NumeroDeVertices(g),Orden,Color1) == ERROR){
             printf("Error en OrdenImparPar \n");
-            return 0;
+            return 1;
         }
         greedy_out = Greedy(g,Orden,Color1);
         min_coloreo = (min_coloreo <= greedy_out) ? min_coloreo : greedy_out; 
 
         /* [2] */
-        if (OrdenJedi(g,Orden,Color2) == SUCCESS){
+        if (OrdenJedi(g,Orden,Color2) == ERROR){
             printf("Error en OrdenImparPar \n");
-            return 0;
+            return 1;
         }
         greedy_out = Greedy(g,Orden,Color2);
         min_coloreo = (min_coloreo <= greedy_out) ? min_coloreo : greedy_out;

@@ -11,9 +11,9 @@ u32 Greedy(Grafo G,u32* Orden,u32* Color) {
     u32 V = NumeroDeVertices(G);
     u32 max_color = 1;
     bool* __restrict__ coloured = calloc(V, sizeof(bool));   // dice si el i-esimo nodo esta coloreado
-    bool* __restrict__ num_set = calloc(V, sizeof(bool));    // dice si el i-esimo color esta usado
+    bool* __restrict__ color_set = calloc(V, sizeof(bool));    // dice si el i-esimo color esta usado
 
-    if (coloured == NULL || num_set == NULL){
+    if (coloured == NULL || color_set == NULL){
         printf("Error en greedy \n");
         return MAX_RANGE;
     }
@@ -26,11 +26,11 @@ u32 Greedy(Grafo G,u32* Orden,u32* Color) {
         {                                       // busca el minimo color para Orden[i]
             for (u32 j = 0; j < Grado(Orden[i],G); j++) {
                 if (coloured[IndiceVecino(j,Orden[i],G)]) {
-                    num_set[Color[IndiceVecino(j,Orden[i],G)]] = true;
+                    color_set[Color[IndiceVecino(j,Orden[i],G)]] = true;
                     max_vec = max(max_vec, Color[IndiceVecino(j,Orden[i],G)]);
                 }
             }
-            while (num_set[min_number]) {
+            while (color_set[min_number]) {
                 min_number++;
             }
             max_color = max(max_color, min_number);
@@ -39,13 +39,13 @@ u32 Greedy(Grafo G,u32* Orden,u32* Color) {
         coloured[Orden[i]] = true;
 
         for (u32 j = 0; j <= max_vec; ++j)
-            num_set[j] = false;
+            color_set[j] = false;
     }
 
     free(coloured);
     coloured = NULL;
-    free(num_set);
-    num_set = NULL;
+    free(color_set);
+    color_set = NULL;
 
     assert(Delta(G) >= max_color);      // propiedad de grafo
 

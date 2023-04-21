@@ -1,7 +1,7 @@
 #ifndef APIP2_H
 #define APIP2_H
 
-#define SUCCESS '1'
+#define ERROR '1'
 
 #include "../construccion-grafo/APIG23.h" // cambiar antes de entregar
 
