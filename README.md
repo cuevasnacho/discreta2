@@ -14,11 +14,13 @@ En la segunda parte utilizamos el algoritmo de Greedy para dar un coloreo propio
 ### Primera parte
 
 Debido a que los nombres de los vertices pueden ser cualquier numero entero entre 0 y 2<sup>32</sup> decidimos usar una funcion de hash para "mapear" cada nodo i con un nuevo nombre j:
+
 $$
 \begin{align}
 hash(i) = j\\
 \end{align}
 $$
+
 para despues manejarse internamente con los nuevos nombres.
 La parte mas costosa en cuanto a complejidad es en poder mapear los nodos con un nuevo nombre. Dada nuestra implementacion sabemos que nuestro algoritmo es muy eficiente para los casos en los que los nodos de entrada no son multiplos de la cantidad de `vertices`. Y nuestro peor caso sucede cuendo lo anterior pasa ya que se incrementa el numero de coaliciones y es costoso resolverlas.
 
@@ -67,4 +69,4 @@ Una vez terminado `Greedy` implementamos algoritmos que dan un orden nuevo de lo
 
 - `OrdenImparPar` : Ordena segun la paridad de $Color[i]$, si $Color[i]$ es impar y $Color[i+1]$ par, entonces $Color[i]>Color[i+1]$. Si tienen la misma paridad entonces ordena de mayor a menor segun su color.
 
-- `OrdenJedi` : Se define una funcion $$F(x)=x(\sum_{i:Color[i]=x} Grado(i,G)) $$,donde $x=0,...,r-1$, con $r$ la cantidad de colores en el grafo $G$.
+- `OrdenJedi` : Se define una funcion : $F(x)=x*(\sum_{i:Color[i]=x} Grado(i,G))$ ,donde $x=0,...,r-1$, con $r$ la cantidad de colores en el grafo $G$.
