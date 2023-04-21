@@ -75,7 +75,7 @@ char OrdenJedi(Grafo G,u32* Orden,u32* Color) {
     u32* sums = calloc(NumeroDeVertices(G), sizeof(u32));
     
     // calculo F(x) para cada color
-    for (u32 i = 0; i < NumeroDeVertices(G); ++i) {
+    for (u32 i = 1; i < NumeroDeVertices(G); ++i) {
         sums[Color[i]] += Grado(i,G);
     }
     for (u32 i = 1; i < NumeroDeVertices(G); ++i) {
