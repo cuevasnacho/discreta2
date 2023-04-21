@@ -13,6 +13,12 @@ inline static u32 max(u32 x, u32 y) {
 
 u32 Greedy(Grafo G,u32* Orden,u32* Color) {
     u32 V = NumeroDeVertices(G);
+
+    /* Propiedad de grafo completo */
+    if ((V*(V-1))/2 == NumeroDeLados(G)){
+        return V;
+    }
+
     u32 max_color = 1;
     bool* __restrict__ coloured = calloc(V, sizeof(bool));   // dice si el i-esimo nodo esta coloreado
     bool* __restrict__ color_set = calloc(V, sizeof(bool));    // dice si el i-esimo color esta usado
