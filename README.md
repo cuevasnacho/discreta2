@@ -1,14 +1,14 @@
 # Matematica Discreta II (Famaf 2023)
 
 ## Integrantes 
-	- Nacho Cuevas
+	- Ignacio Cuevas
 	- Tomas Marmay 
 
 ## Grafos
 
 En este proyecto se va a estar trabajando sobre procesamiento y algoritmos en grafos en el lenguaje de C. 
 Basicamente se basa en dos partes. La primera parte se trata sobre procesar un grafo dado en formato DIMACS (con leve modificaciones) y construir funciones basicas.
-Y la segunda parte se trata sobre ...
+En la segunda parte utilizamos el algoritmo de Greedy para dar un coloreo propio del grafo construido por la parte 1 dando ciertos ordenes de los nodos para aproximar su numero cromatico.
 
 
 ### Primera parte
@@ -16,7 +16,7 @@ Y la segunda parte se trata sobre ...
 Debido a que los nombres de los vertices pueden ser cualquier numero entero entre 0 y 2<sup>32</sup> decidimos usar una funcion de hash para "mapear" cada nodo i con un nuevo nombre j:
 $$
 \begin{align}
-has(i) = j\\
+hash(i) = j\\
 \end{align}
 $$
 para despues manejarse internamente con los nuevos nombres.
@@ -49,3 +49,22 @@ Nuestro algoritmo tienen los siguientes tiempos en peor y mejor caso, hablando s
 - Todo el proyecto seria mejor diseñado y con mas rendimiento si fuera implementado en C++
 
 
+### Segunda parte
+
+Para escribir el codigo de `Greedy para colorear grafos` seguimos la definicion dada en la teoria.
+
+$$
+c(x_{i})=
+\begin{cases}
+0 & \quad i=0\\
+min(k\geq0:c(x_{i})\neq k \: \forall j<i:x_{j}\in\Gamma(x_{i})) & \quad i>0
+\end{cases}
+$$
+
+El hecho de tener que recorrer todos los vertices y sus vecinos, nos da una complejidad de $O(nm)$.
+
+Una vez terminado `Greedy` implementamos algoritmos que dan un orden nuevo de los nodos para correr greedy nuevamente.
+
+- `OrdenImparPar` : Ordena segun la paridad de $Color[i]$, si $Color[i]$ es impar y $Color[i+1]$ par, entonces $Color[i]>Color[i+1]$. Si tienen la misma paridad entonces ordena de mayor a menor segun su color.
+
+- `OrdenJedi` : Se define una funcion $ F(x)=x(\sum_{i:Color[i]=x} Grado(i,G))\\ $, donde $x=0,...,r-1$, con $r$ la cantidad de colores en el grafo $G$.
