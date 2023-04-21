@@ -44,6 +44,12 @@ u32 Greedy(Grafo G,u32* Orden,u32* Color) {
     return max_color+1;
 }
 
+int compare(const void *a, const void *b) {
+    int *x = (int *)a;
+    int *y = (int *)b;
+    return (*x - *y); // Sort in ascending order
+}
+
 char OrdenImparPar(u32 n,u32* Orden,u32* Color) {
     // funcion para comparar entre F(x)
     int compare (const void *a, const void *b) {
@@ -72,7 +78,7 @@ char OrdenJedi(Grafo G,u32* Orden,u32* Color) {
     for (u32 i = 0; i < NumeroDeVertices(G); ++i) {
         sums[Color[i]] += Grado(i,G);
     }
-    for (u32 i = 0; i < NumeroDeVertices(G); ++i) {
+    for (u32 i = 1; i < NumeroDeVertices(G); ++i) {
         if (sums[i]) sums[i] *= i;
         else break;
     }
@@ -81,7 +87,7 @@ char OrdenJedi(Grafo G,u32* Orden,u32* Color) {
         u32 *x = (u32 *)a;
         u32 *y = (u32 *)b;
         
-        return (sums[*y] - sums[*x]);
+        return (sums[Color[*y]] - sums[Color[*x]]);
     }
 
     // ordeno los vertices con la funcion custom
