@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "APIParte2.h"
 
+#define ERROR '1'
+
 int main(void) {
     Grafo g = ConstruirGrafo();
     u32* Color1 = calloc(NumeroDeVertices(g), sizeof(u32));

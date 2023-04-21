@@ -3,6 +3,10 @@
 #include <assert.h>
 #include "APIParte2.h"
 
+#define ERROR '1'
+
+typedef unsigned int u32;
+
 inline static u32 max(u32 x, u32 y) {
     return (x>y)?x:y;
 }
@@ -78,7 +82,7 @@ char OrdenJedi(Grafo G,u32* Orden,u32* Color) {
     
     if (sums == NULL){
         printf("Error en orden jedi \n");
-        return '1';
+        return ERROR;
     }
     // calculo F(x) para cada color
     for (u32 i = 1; i < NumeroDeVertices(G); ++i) {
