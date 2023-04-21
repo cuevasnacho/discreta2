@@ -67,4 +67,4 @@ Una vez terminado `Greedy` implementamos algoritmos que dan un orden nuevo de lo
 
 - `OrdenImparPar` : Ordena segun la paridad de $Color[i]$, si $Color[i]$ es impar y $Color[i+1]$ par, entonces $Color[i]>Color[i+1]$. Si tienen la misma paridad entonces ordena de mayor a menor segun su color.
 
-- `OrdenJedi` : Se define una funcion $$F(x)=x(\sum_{i:Color[i]=x} Grado(i,G))\\ $, donde $x=0,...,r-1$$, con $r$ la cantidad de colores en el grafo $G$.
+- `OrdenJedi` : Se define una funcion $$F(x)=x(\sum_{i:Color[i]=x} Grado(i,G))\\ $, donde $x=0,...,r-1$, con $r$ la cantidad de colores en el grafo $G$.
