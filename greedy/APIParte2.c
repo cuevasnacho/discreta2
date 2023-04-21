@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
+#include <assert.h>
 #include "APIParte2.h"
 
 inline static u32 max(u32 x, u32 y) {
@@ -46,13 +47,9 @@ u32 Greedy(Grafo G,u32* Orden,u32* Color) {
     free(num_set);
     num_set = NULL;
 
-    return max_color+1;
-}
+    assert(Delta(G) >= max_color);      // propiedad de grafo
 
-int compare(const void *a, const void *b) {
-    int *x = (int *)a;
-    int *y = (int *)b;
-    return (*x - *y); // Sort in ascending order
+    return max_color+1;
 }
 
 char OrdenImparPar(u32 n,u32* Orden,u32* Color) {
@@ -81,7 +78,7 @@ char OrdenJedi(Grafo G,u32* Orden,u32* Color) {
     
     if (sums == NULL){
         printf("Error en orden jedi \n");
-        return MAX_RANGE;
+        return '1';
     }
     // calculo F(x) para cada color
     for (u32 i = 1; i < NumeroDeVertices(G); ++i) {
