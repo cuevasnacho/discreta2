@@ -1,8 +1,8 @@
 # Matematica Discreta II (Famaf 2023)
 
 ## Integrantes 
-	- Ignacio Cuevas
-	- Tomas Marmay 
+- Ignacio Cuevas
+- Tomas Marmay 
 
 ## Grafos
 
