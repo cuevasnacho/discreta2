@@ -1,9 +1,4 @@
-#include <stdlib.h>
-#include <stdbool.h>
-#include <assert.h>
 #include "APIParte2.h"
-
-#define ERROR '1'
 
 typedef unsigned int u32;
 
@@ -20,8 +15,8 @@ u32 Greedy(Grafo G,u32* Orden,u32* Color) {
     }
 
     u32 max_color = 1;
-    bool* __restrict__ coloured = calloc(V, sizeof(bool));   // dice si el i-esimo nodo esta coloreado
-    bool* __restrict__ color_set = calloc(V, sizeof(bool));    // dice si el i-esimo color esta usado
+    bool* coloured = calloc(V, sizeof(bool));   // dice si el i-esimo nodo esta coloreado
+    bool* color_set = calloc(V, sizeof(bool));    // dice si el i-esimo color esta usado
 
     if (coloured == NULL || color_set == NULL){
         printf("Error en greedy \n");
@@ -57,8 +52,6 @@ u32 Greedy(Grafo G,u32* Orden,u32* Color) {
     free(color_set);
     color_set = NULL;
 
-    assert(Delta(G) >= max_color);      // propiedad de grafo
-
     return max_color+1;
 }
 
@@ -80,15 +73,15 @@ char OrdenImparPar(u32 n,u32* Orden,u32* Color) {
     // ordeno los vertices con la funcion custom
     qsort(Orden, n, sizeof(u32), compare);
 
-    return '0';
+    return (char)0;
 }
 
 char OrdenJedi(Grafo G,u32* Orden,u32* Color) {
-    u32* __restrict__ sums = calloc(NumeroDeVertices(G), sizeof(u32));
+    u32* sums = calloc(NumeroDeVertices(G), sizeof(u32));
     
     if (sums == NULL){
         printf("Error en orden jedi \n");
-        return ERROR;
+        return (char)1;
     }
     // calculo F(x) para cada color
     for (u32 i = 1; i < NumeroDeVertices(G); ++i) {
@@ -99,7 +92,7 @@ char OrdenJedi(Grafo G,u32* Orden,u32* Color) {
         else break;
     }
     // funcion para comparar entre F(x)
-    int compare (const void *a, const void *b) {
+    int compare (const void *a, const void *b){
         u32 *x = (u32 *)a;
         u32 *y = (u32 *)b;
         
@@ -112,5 +105,5 @@ char OrdenJedi(Grafo G,u32* Orden,u32* Color) {
     free(sums);
     sums = NULL;
 
-    return '0';
+    return (char)0;
 }
