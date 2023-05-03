@@ -1,9 +1,7 @@
 #ifndef __APIP2_H
 #define __APIP2_H
 
-
-#include "../construccion-grafo/APIG23.h" 
-
+#include "APIG23.h"
 
 //se asume que Orden y Color tienen alocadas las cantidades correctas de memoria
 

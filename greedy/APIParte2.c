@@ -1,9 +1,9 @@
 #include "APIParte2.h"
 
-typedef unsigned int u32;
+#define ERROR 4294967295
 
-inline static u32 max(u32 x, u32 y) {
-    return (x>y)?x:y;
+static u32 maxx(u32 x, u32 y) {
+    return (x>y) ? x : y;
 }
 
 u32 Greedy(Grafo G,u32* Orden,u32* Color) {
@@ -18,28 +18,26 @@ u32 Greedy(Grafo G,u32* Orden,u32* Color) {
     bool* coloured = calloc(V, sizeof(bool));   // dice si el i-esimo nodo esta coloreado
     bool* color_set = calloc(V, sizeof(bool));    // dice si el i-esimo color esta usado
 
-    if (coloured == NULL || color_set == NULL){
-        printf("Error en greedy \n");
-        return MAX_RANGE;
-    }
+    if (coloured == NULL || color_set == NULL)
+        return ERROR;
 
     Color[Orden[0]] = 0;
     coloured[Orden[0]] = true;
 
     for (u32 i = 1; i < V; ++i) {
         u32 min_number = 0, max_vec = 0;
-        {                                       // busca el minimo color para Orden[i]
-            for (u32 j = 0; j < Grado(Orden[i],G); j++) {
-                if (coloured[IndiceVecino(j,Orden[i],G)]) {
-                    color_set[Color[IndiceVecino(j,Orden[i],G)]] = true;
-                    max_vec = max(max_vec, Color[IndiceVecino(j,Orden[i],G)]);
-                }
+
+        for (u32 j = 0; j < Grado(Orden[i],G); j++) {
+            if (coloured[IndiceVecino(j,Orden[i],G)]) {
+                color_set[Color[IndiceVecino(j,Orden[i],G)]] = true;
+                max_vec = maxx(max_vec, Color[IndiceVecino(j,Orden[i],G)]);
             }
-            while (color_set[min_number]) {
-                min_number++;
-            }
-            max_color = max(max_color, min_number);
         }
+        while (color_set[min_number]) {
+            min_number++;
+        }
+
+        max_color = maxx(max_color, min_number);
         Color[Orden[i]] = min_number;
         coloured[Orden[i]] = true;
 
@@ -52,7 +50,7 @@ u32 Greedy(Grafo G,u32* Orden,u32* Color) {
     free(color_set);
     color_set = NULL;
 
-    return max_color+1;
+    return (u32)max_color+1;
 }
 
 char OrdenImparPar(u32 n,u32* Orden,u32* Color) {
@@ -80,7 +78,6 @@ char OrdenJedi(Grafo G,u32* Orden,u32* Color) {
     u32* sums = calloc(NumeroDeVertices(G), sizeof(u32));
     
     if (sums == NULL){
-        printf("Error en orden jedi \n");
         return (char)1;
     }
     // calculo F(x) para cada color
@@ -88,8 +85,10 @@ char OrdenJedi(Grafo G,u32* Orden,u32* Color) {
         sums[Color[i]] += Grado(i,G);
     }
     for (u32 i = 1; i < NumeroDeVertices(G); ++i) {
-        if (sums[i]) sums[i] *= i;
-        else break;
+        if (sums[i]) 
+            sums[i] *= i;
+        else 
+            break;
     }
     // funcion para comparar entre F(x)
     int compare (const void *a, const void *b){
