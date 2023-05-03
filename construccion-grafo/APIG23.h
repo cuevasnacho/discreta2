@@ -3,12 +3,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <limits.h>
-#include <math.h>
 
 #include "EstructuraGrafo23.h"
-
-#define MAX_RANGE UINT_MAX  
 
 //Grafo es un puntero a una estructura GrafoSt, la cual debe estar definida en el .h de arriba
 typedef GrafoSt *Grafo;

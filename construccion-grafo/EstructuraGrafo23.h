@@ -4,8 +4,6 @@
 #include <stdbool.h>
 #include "vector.h"
 
-typedef unsigned int u32;
-
 typedef struct GrafoSt {
     vector* vertex;
     u32* __restrict__ name;

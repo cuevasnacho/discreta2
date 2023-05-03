@@ -1,13 +1,13 @@
-#include <stdlib.h>
 #include "APIG23.h"
-#include "vector.h"
 #include "rbt.h"
 
-inline static u32 hash_func(u32 a, u32 size){
+#define MAX_RANGE (u32)(-1)
+
+inline static u32 hash_func(u32 a, u32 size) {
     return a%size;
 }
 
-inline static u32 max(u32 a, u32 b) {
+inline static u32 maxx(u32 a, u32 b) {
     return (a > b) ? a : b;   
 }
 
@@ -112,7 +112,7 @@ Grafo ConstruirGrafo() {
     set_destroy(s);
 
     /* Armar conexiones con el nuevo mapeo */
-    double coneccion_qty = ceil((0.0001*g->E)/100);
+    double coneccion_qty = ((0.0001*g->E+1)/100);
     for (u32 i=0; i < g->E; i++) {
         u32 x,y,n;
 
@@ -159,7 +159,7 @@ Grafo ConstruirGrafo() {
     /* Calcular el delta del grafo */
     for (u32 i=0; i<g->V; ++i) {
         if(g->init[i])
-            g->degree = max(g->degree,vector_size(g->vertex[i]));
+            g->degree = maxx(g->degree,vector_size(g->vertex[i]));
         
         /* Aprovecho el ciclo para destruir find_index[i] */
         if (init_fi[i])

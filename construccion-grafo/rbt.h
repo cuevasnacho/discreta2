@@ -1,13 +1,7 @@
 #ifndef RBT_H
 #define RBT_h
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include "vector.h"
 #include "APIG23.h"
-
-typedef unsigned int u32;
 
 typedef struct set_r {
     struct node* root;

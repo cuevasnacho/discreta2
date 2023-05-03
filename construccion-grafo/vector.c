@@ -13,7 +13,7 @@ vector vector_init(u32 size) {
     if (v == NULL)
         printf("Error pidiendo memoria \n");
     v->size = 0;
-    v->capacity = size;
+    v->capacity = size+1;
     v->values = calloc(size, sizeof(u32));
     if (v->values == NULL)
         printf("Error pidiendo memoria \n");

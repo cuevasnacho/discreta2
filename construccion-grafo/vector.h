@@ -2,6 +2,7 @@
 #define VECTOR_H
 
 typedef unsigned int u32;
+
 typedef struct vector_head *vector;
 
 // Returns a pointer to an initialized vector
