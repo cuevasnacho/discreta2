@@ -39,6 +39,11 @@ u32 Greedy(Grafo G,u32* Orden,u32* Color) {
             }
             max_color = maxx(max_color, min_number);
         }
+        while (color_set[min_number]) {
+            min_number++;
+        }
+
+        max_color = maxx(max_color, min_number);
         Color[Orden[i]] = min_number;
         coloured[Orden[i]] = true;
 
